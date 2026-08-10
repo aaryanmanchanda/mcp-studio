@@ -1,0 +1,62 @@
+name: Proto contract
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  buf-lint-breaking:
+    name: buf lint + breaking
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (full history)
+        uses: actions/checkout@v4
+        with:
+          # buf breaking diffs against a previous commit (main), so it needs
+          # real git history, not GitHub's default shallow clone.
+          fetch-depth: 0
+
+      - name: Install buf
+        uses: bufbuild/buf-setup-action@v1
+        with:
+          # Pinned to match the toolchain verified locally in Plan 01
+          # (01-01-SUMMARY.md), not the plan's original 1.71.x guess —
+          # CI and local must use the same buf version or lint/breaking
+          # results can silently disagree.
+          version: "1.72.0"
+
+      - name: buf lint
+        run: buf lint
+
+      - name: buf breaking (against main)
+        run: buf breaking --against ".git#branch=main"
+
+  gen-not-stale:
+    name: generated code is not stale
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        # No fetch-depth override needed here — this job only compares the
+        # working tree to itself after regenerating, not to another commit.
+
+      - name: Install buf
+        uses: bufbuild/buf-setup-action@v1
+        with:
+          version: "1.72.0"
+
+      - name: Regenerate
+        run: buf generate
+
+      # buf.gen.yaml uses buf's remote plugins (protoc-gen-go, -es, -python,
+      # etc. all hosted and versioned by buf itself), not locally-installed
+      # protoc plugins. That means there is no separate "which plugin
+      # version is on this machine" variable to drift between a
+      # contributor's laptop and this runner — the only two inputs that can
+      # differ are the buf CLI version (pinned above, same as the other
+      # job) and the proto source itself, both of which this workflow
+      # already controls.
+      - name: Fail if regeneration produced a diff
+        run: git diff --exit-code -- gen/
