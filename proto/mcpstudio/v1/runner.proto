@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package mcpstudio.v1;
+
+import "mcpstudio/v1/nodeio.proto";
+
+// What the orchestrator sends a runner to execute one node.
+message ExecuteNodeRequest {
+  string node_id = 1;
+  string manifest_id = 2;
+  map<string, NodeIO> inputs = 3;
+  map<string, string> config = 4;
+}
+
+// One status update a runner streams back for a node it's executing.
+message NodeEvent {
+  enum Status {
+    STATUS_UNSPECIFIED = 0;
+    STATUS_QUEUED = 1;
+    STATUS_RUNNING = 2;
+    STATUS_PROGRESS = 3;
+    STATUS_SUCCEEDED = 4;
+    STATUS_FAILED = 5;
+  }
+
+  string node_id = 1;
+  Status status = 2;
+  int32 progress_pct = 3;
+  string error = 4;
+  map<string, NodeIO> outputs = 5;
+}
+
+// The orchestrator<->runner contract: hand off one node, get a stream of
+// status updates back until it finishes or fails.
+service Runner {
+  rpc ExecuteNode(ExecuteNodeRequest) returns (stream NodeEvent);
+}
