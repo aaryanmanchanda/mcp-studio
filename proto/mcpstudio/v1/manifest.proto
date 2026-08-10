@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package mcpstudio.v1;
+
+// Describes one input or output socket on a node: what content type and
+// JSON Schema it expects, used by the canvas's wire-compatibility engine.
+message SocketDef {
+  string name = 1;
+  string content_type = 2;
+  string schema_json = 3;
+}
+
+// Describes one BYOK/config field a node's config panel should render.
+message ConfigFieldDef {
+  string name = 1;
+  bool secret = 2;
+  string auth_type = 3;
+}
+
+// One entry in a converter node's declared conversion table (e.g. mp4 -> webm).
+message ConverterPair {
+  string from = 1;
+  string to = 2;
+}
+
+// The registry entry for one node type — the palette definition, not a
+// placed instance on a canvas.
+message NodeManifest {
+  string id = 1;
+  string category = 2;
+  repeated SocketDef inputs = 3;
+  repeated SocketDef outputs = 4;
+  repeated ConfigFieldDef config_fields = 5;
+  repeated ConverterPair converts = 6;
+  string pricing_json = 7;
+}

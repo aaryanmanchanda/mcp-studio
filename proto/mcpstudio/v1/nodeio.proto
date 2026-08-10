@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package mcpstudio.v1;
+
+import "google/protobuf/struct.proto";
+
+// A reference to a large binary payload stored outside the message itself
+// (object storage) — large files are never inlined in gRPC messages.
+message BlobRef {
+  string uri = 1;
+  string content_type = 2;
+}
+
+// The universal value that flows across every wire between nodes: either
+// small structured JSON, or a reference to a large binary blob.
+message NodeIO {
+  oneof payload {
+    google.protobuf.Struct json_value = 1;
+    BlobRef blob_ref = 2;
+  }
+}

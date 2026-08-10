@@ -1,0 +1,62 @@
+syntax = "proto3";
+
+package mcpstudio.v1;
+
+import "mcpstudio/v1/manifest.proto";
+
+// A saved pipeline: just an id and its serialized graph for now — Phase 1
+// only needs this to compile, real persistence lands in Phase 3.
+message Pipeline {
+  string id = 1;
+  string graph_json = 2;
+}
+
+// One status update for a single node within a running pipeline.
+message RunEvent {
+  string node_id = 1;
+  string status = 2;
+}
+
+message ListNodeManifestsRequest {}
+
+message ListNodeManifestsResponse {
+  repeated NodeManifest manifests = 1;
+}
+
+message SavePipelineRequest {
+  Pipeline pipeline = 1;
+}
+
+message SavePipelineResponse {
+  string id = 1;
+}
+
+message GetPipelineRequest {
+  string id = 1;
+}
+
+message GetPipelineResponse {
+  Pipeline pipeline = 1;
+}
+
+message StartRunRequest {
+  string pipeline_id = 1;
+}
+
+message StartRunResponse {
+  string run_id = 1;
+}
+
+message WatchRunRequest {
+  string run_id = 1;
+}
+
+// The frontend<->orchestrator contract (Connect-RPC): manage pipelines and
+// runs, and watch a run's node-by-node status live.
+service Orchestrator {
+  rpc ListNodeManifests(ListNodeManifestsRequest) returns (ListNodeManifestsResponse);
+  rpc SavePipeline(SavePipelineRequest) returns (SavePipelineResponse);
+  rpc GetPipeline(GetPipelineRequest) returns (GetPipelineResponse);
+  rpc StartRun(StartRunRequest) returns (StartRunResponse);
+  rpc WatchRun(WatchRunRequest) returns (stream RunEvent);
+}
