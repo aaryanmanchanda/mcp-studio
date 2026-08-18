@@ -24,7 +24,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x1bmcpstudio/v1/manifest.proto\x12\x0cmcpstudio.v1\"c\n\tSocketDef\x12\x12\n\x04name\x18\x01 \x01(\tR\x04name\x12!\n\x0c\x63ontent_type\x18\x02 \x01(\tR\x0b\x63ontentType\x12\x1f\n\x0bschema_json\x18\x03 \x01(\tR\nschemaJson\"Y\n\x0e\x43onfigFieldDef\x12\x12\n\x04name\x18\x01 \x01(\tR\x04name\x12\x16\n\x06secret\x18\x02 \x01(\x08R\x06secret\x12\x1b\n\tauth_type\x18\x03 \x01(\tR\x08\x61uthType\"3\n\rConverterPair\x12\x12\n\x04\x66rom\x18\x01 \x01(\tR\x04\x66rom\x12\x0e\n\x02to\x18\x02 \x01(\tR\x02to\"\xbd\x02\n\x0cNodeManifest\x12\x0e\n\x02id\x18\x01 \x01(\tR\x02id\x12\x1a\n\x08\x63\x61tegory\x18\x02 \x01(\tR\x08\x63\x61tegory\x12/\n\x06inputs\x18\x03 \x03(\x0b\x32\x17.mcpstudio.v1.SocketDefR\x06inputs\x12\x31\n\x07outputs\x18\x04 \x03(\x0b\x32\x17.mcpstudio.v1.SocketDefR\x07outputs\x12\x41\n\rconfig_fields\x18\x05 \x03(\x0b\x32\x1c.mcpstudio.v1.ConfigFieldDefR\x0c\x63onfigFields\x12\x37\n\x08\x63onverts\x18\x06 \x03(\x0b\x32\x1b.mcpstudio.v1.ConverterPairR\x08\x63onverts\x12!\n\x0cpricing_json\x18\x07 \x01(\tR\x0bpricingJsonB\xb3\x01\n\x10\x63om.mcpstudio.v1B\rManifestProtoP\x01Z?github.com/mcpstudio/mcp_studio/gen/go/mcpstudio/v1;mcpstudiov1\xa2\x02\x03MXX\xaa\x02\x0cMcpstudio.V1\xca\x02\x0cMcpstudio\\V1\xe2\x02\x18Mcpstudio\\V1\\GPBMetadata\xea\x02\rMcpstudio::V1b\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x1bmcpstudio/v1/manifest.proto\x12\x0cmcpstudio.v1\"c\n\tSocketDef\x12\x12\n\x04name\x18\x01 \x01(\tR\x04name\x12!\n\x0c\x63ontent_type\x18\x02 \x01(\tR\x0b\x63ontentType\x12\x1f\n\x0bschema_json\x18\x03 \x01(\tR\nschemaJson\"\xbd\x01\n\x0e\x43onfigFieldDef\x12\x12\n\x04name\x18\x01 \x01(\tR\x04name\x12\x16\n\x06secret\x18\x02 \x01(\x08R\x06secret\x12\x1b\n\tauth_type\x18\x03 \x01(\tR\x08\x61uthType\x12\x41\n\nvalue_type\x18\x04 \x01(\x0e\x32\".mcpstudio.v1.ConfigFieldValueTypeR\tvalueType\x12\x1f\n\x0b\x65num_values\x18\x05 \x03(\tR\nenumValues\"3\n\rConverterPair\x12\x12\n\x04\x66rom\x18\x01 \x01(\tR\x04\x66rom\x12\x0e\n\x02to\x18\x02 \x01(\tR\x02to\"\xbd\x02\n\x0cNodeManifest\x12\x0e\n\x02id\x18\x01 \x01(\tR\x02id\x12\x1a\n\x08\x63\x61tegory\x18\x02 \x01(\tR\x08\x63\x61tegory\x12/\n\x06inputs\x18\x03 \x03(\x0b\x32\x17.mcpstudio.v1.SocketDefR\x06inputs\x12\x31\n\x07outputs\x18\x04 \x03(\x0b\x32\x17.mcpstudio.v1.SocketDefR\x07outputs\x12\x41\n\rconfig_fields\x18\x05 \x03(\x0b\x32\x1c.mcpstudio.v1.ConfigFieldDefR\x0c\x63onfigFields\x12\x37\n\x08\x63onverts\x18\x06 \x03(\x0b\x32\x1b.mcpstudio.v1.ConverterPairR\x08\x63onverts\x12!\n\x0cpricing_json\x18\x07 \x01(\tR\x0bpricingJson*\xce\x01\n\x14\x43onfigFieldValueType\x12\'\n#CONFIG_FIELD_VALUE_TYPE_UNSPECIFIED\x10\x00\x12\"\n\x1e\x43ONFIG_FIELD_VALUE_TYPE_STRING\x10\x01\x12\"\n\x1e\x43ONFIG_FIELD_VALUE_TYPE_NUMBER\x10\x02\x12#\n\x1f\x43ONFIG_FIELD_VALUE_TYPE_BOOLEAN\x10\x03\x12 \n\x1c\x43ONFIG_FIELD_VALUE_TYPE_ENUM\x10\x04\x42\xb3\x01\n\x10\x63om.mcpstudio.v1B\rManifestProtoP\x01Z?github.com/mcpstudio/mcp_studio/gen/go/mcpstudio/v1;mcpstudiov1\xa2\x02\x03MXX\xaa\x02\x0cMcpstudio.V1\xca\x02\x0cMcpstudio\\V1\xe2\x02\x18Mcpstudio\\V1\\GPBMetadata\xea\x02\rMcpstudio::V1b\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -32,12 +32,14 @@ _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'mcpstudio.v1.manifest_pb2',
 if not _descriptor._USE_C_DESCRIPTORS:
   _globals['DESCRIPTOR']._loaded_options = None
   _globals['DESCRIPTOR']._serialized_options = b'\n\020com.mcpstudio.v1B\rManifestProtoP\001Z?github.com/mcpstudio/mcp_studio/gen/go/mcpstudio/v1;mcpstudiov1\242\002\003MXX\252\002\014Mcpstudio.V1\312\002\014Mcpstudio\\V1\342\002\030Mcpstudio\\V1\\GPBMetadata\352\002\rMcpstudio::V1'
+  _globals['_CONFIGFIELDVALUETYPE']._serialized_start=712
+  _globals['_CONFIGFIELDVALUETYPE']._serialized_end=918
   _globals['_SOCKETDEF']._serialized_start=45
   _globals['_SOCKETDEF']._serialized_end=144
-  _globals['_CONFIGFIELDDEF']._serialized_start=146
-  _globals['_CONFIGFIELDDEF']._serialized_end=235
-  _globals['_CONVERTERPAIR']._serialized_start=237
-  _globals['_CONVERTERPAIR']._serialized_end=288
-  _globals['_NODEMANIFEST']._serialized_start=291
-  _globals['_NODEMANIFEST']._serialized_end=608
+  _globals['_CONFIGFIELDDEF']._serialized_start=147
+  _globals['_CONFIGFIELDDEF']._serialized_end=336
+  _globals['_CONVERTERPAIR']._serialized_start=338
+  _globals['_CONVERTERPAIR']._serialized_end=389
+  _globals['_NODEMANIFEST']._serialized_start=392
+  _globals['_NODEMANIFEST']._serialized_end=709
 # @@protoc_insertion_point(module_scope)
