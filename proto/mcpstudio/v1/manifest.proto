@@ -2,6 +2,16 @@ syntax = "proto3";
 
 package mcpstudio.v1;
 
+// Config field type for node rendering
+enum ConfigFieldValueType {
+  CONFIG_FIELD_VALUE_TYPE_UNSPECIFIED = 0;
+  CONFIG_FIELD_VALUE_TYPE_STRING = 1;
+  CONFIG_FIELD_VALUE_TYPE_NUMBER = 2;
+  CONFIG_FIELD_VALUE_TYPE_BOOLEAN = 3;
+  CONFIG_FIELD_VALUE_TYPE_ENUM = 4;
+
+}
+
 // Describes one input or output socket on a node: what content type and
 // JSON Schema it expects, used by the canvas's wire-compatibility engine.
 message SocketDef {
@@ -15,6 +25,8 @@ message ConfigFieldDef {
   string name = 1;
   bool secret = 2;
   string auth_type = 3;
+  ConfigFieldValueType value_type = 4;
+  repeated string enum_values = 5; //only important when value_type is the enum case, otherwise 0 just means string
 }
 
 // One entry in a converter node's declared conversion table (e.g. mp4 -> webm).

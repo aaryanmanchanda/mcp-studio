@@ -16,8 +16,6 @@ plugins:
     opt: paths=source_relative
   - remote: buf.build/bufbuild/es
     out: gen/ts
-  - remote: buf.build/connectrpc/es
-    out: gen/ts
   - remote: buf.build/protocolbuffers/python
     out: gen/python
   - remote: buf.build/grpc/python
