@@ -8,6 +8,27 @@ together, configure each node with their own enterprise API credentials
 never holds a shared API key, never bills usage on the user's behalf, and
 never takes custody of enterprise accounts.
 
+## Status
+
+**In active development — not yet a working end-to-end product.** What's built
+and verified so far:
+
+- A single proto contract (`proto/`) generating compiling Go, TypeScript, and
+  Python clients via `buf`, with CI gates (`buf lint`/`buf breaking`,
+  generated-code staleness) blocking schema drift before merge
+- A cross-language gRPC round-trip proof (`scripts/roundtrip.sh`) between the
+  Go orchestrator and a Python runner stub
+- A live Connect-RPC node-manifest registry (`orchestrator/cmd/manifestserver`)
+  serving six fixture node definitions, purpose-built so their sockets exercise
+  all four cases the canvas's compatibility engine will need to resolve: exact
+  content-type/schema match, a rule-based shape adapter, a multi-hop converter
+  chain, and a genuinely incompatible pair — proven live with
+  `scripts/manifests.sh`
+
+**Not built yet:** the canvas itself, the compatibility resolver, a secrets
+vault, the config panel, and running real nodes end-to-end. Currently in
+Phase 2 of a six-phase build.
+
 ## Proto contract
 
 The frontend, orchestrator (Go), and runners (Python/TypeScript) all talk to
