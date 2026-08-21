@@ -3,3 +3,8 @@
 __pycache__/
 node_modules/
 .DS_Store
+
+# Personal/local-only — not part of the public repo
+.claude/
+explain.md
+SRS_mcp_pipeline_builder.md
