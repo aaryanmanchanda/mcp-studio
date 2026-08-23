@@ -3,6 +3,8 @@
 __pycache__/
 node_modules/
 .DS_Store
+.turbo/
+dist/
 
 # Personal/local-only — not part of the public repo
 .claude/
