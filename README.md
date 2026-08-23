@@ -24,10 +24,13 @@ and verified so far:
   content-type/schema match, a rule-based shape adapter, a multi-hop converter
   chain, and a genuinely incompatible pair — proven live with
   `scripts/manifests.sh`
+- A stdlib-only AES-256-GCM secrets vault (`orchestrator/internal/vault`),
+  unit-tested for nonce uniqueness across 1000 calls, tamper detection, and
+  key-size enforcement — not yet wired to credential storage, that's Phase 3
 
-**Not built yet:** the canvas itself, the compatibility resolver, a secrets
-vault, the config panel, and running real nodes end-to-end. Currently in
-Phase 2 of a six-phase build.
+**Not built yet:** the canvas itself, the compatibility resolver, the config
+panel, and running real nodes end-to-end. Currently in Phase 2 of a
+six-phase build.
 
 ## Proto contract
 
