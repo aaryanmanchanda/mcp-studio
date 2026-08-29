@@ -1,11 +1,11 @@
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { Palette } from "@/palette/Palette";
 
 function App() {
   return (
     <TooltipProvider>
       <div className="flex h-screen w-screen bg-background">
-        {/* Palette: filled in Plan 02-03 Task 3 */}
-        <div className="w-[240px] shrink-0 border-r border-border bg-card" />
+        <Palette />
 
         {/* Canvas: filled in Plan 02-04 */}
         <div className="flex-1" />
