@@ -1,4 +1,5 @@
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { Canvas } from "@/canvas/Canvas";
 import { Palette } from "@/palette/Palette";
 
 function App() {
@@ -7,8 +8,9 @@ function App() {
       <div className="flex h-screen w-screen bg-background">
         <Palette />
 
-        {/* Canvas: filled in Plan 02-04 */}
-        <div className="flex-1" />
+        <div className="flex-1">
+          <Canvas />
+        </div>
 
         {/* Config panel: filled in Plan 02-06 */}
         <div className="w-[320px] shrink-0 border-l border-border bg-card" />

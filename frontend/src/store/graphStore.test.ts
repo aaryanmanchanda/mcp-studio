@@ -100,3 +100,64 @@ describe('graphStore — registry slice', () => {
     expect(useGraphStore.getState().registryStatus).toBe('ready');
   });
 });
+
+describe('graphStore — graph slice', () => {
+  beforeEach(() => {
+    useGraphStore.setState({ nodes: [], edges: [], selectedNodeId: null });
+  });
+
+  it('addNodeFromManifest: two drops of the same manifest are two independent nodes', () => {
+    const { addNodeFromManifest } = useGraphStore.getState();
+    addNodeFromManifest('youtube-scraper', { x: 0, y: 0 });
+    addNodeFromManifest('youtube-scraper', { x: 100, y: 100 });
+
+    const { nodes } = useGraphStore.getState();
+    expect(nodes).toHaveLength(2);
+    expect(nodes[0].id).not.toBe(nodes[1].id);
+    expect(nodes[0].data.manifestId).toBe('youtube-scraper');
+    expect(nodes[0].position).toEqual({ x: 0, y: 0 });
+    expect(nodes[1].position).toEqual({ x: 100, y: 100 });
+  });
+
+  it('deleteNode: an unknown id leaves state untouched and does not throw', () => {
+    useGraphStore.getState().addNodeFromManifest('trim-clip', { x: 0, y: 0 });
+    const before = useGraphStore.getState().nodes;
+
+    expect(() => useGraphStore.getState().deleteNode('does-not-exist')).not.toThrow();
+    // same array reference — the early return means no set() fired
+    expect(useGraphStore.getState().nodes).toBe(before);
+  });
+
+  it('deleteNode: removes every edge incident to the deleted node', () => {
+    const s = useGraphStore.getState();
+    s.addNodeFromManifest('youtube-scraper', { x: 0, y: 0 });
+    s.addNodeFromManifest('relevance-filter', { x: 200, y: 0 });
+    s.addNodeFromManifest('trim-clip', { x: 400, y: 0 });
+    const [a, b, c] = useGraphStore.getState().nodes;
+
+    // seed edges directly — onConnect doesn't exist until Task 3
+    useGraphStore.setState({
+      edges: [
+        { id: 'e1', source: a.id, target: b.id }, // a -> b  (incident to a)
+        { id: 'e2', source: b.id, target: a.id }, // b -> a  (incident to a)
+        { id: 'e3', source: b.id, target: c.id }, // b -> c  (untouched)
+      ],
+    });
+
+    useGraphStore.getState().deleteNode(a.id);
+
+    const { nodes, edges } = useGraphStore.getState();
+    expect(nodes.map((n) => n.id)).toEqual([b.id, c.id]);
+    expect(edges.map((e) => e.id)).toEqual(['e3']);
+  });
+
+  it('deleteNode: clears the selection when the deleted node was selected', () => {
+    useGraphStore.getState().addNodeFromManifest('upload-post', { x: 0, y: 0 });
+    const [node] = useGraphStore.getState().nodes;
+    useGraphStore.getState().setSelectedNodeId(node.id);
+
+    useGraphStore.getState().deleteNode(node.id);
+
+    expect(useGraphStore.getState().selectedNodeId).toBeNull();
+  });
+});

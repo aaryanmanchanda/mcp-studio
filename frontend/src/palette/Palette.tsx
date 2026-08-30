@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import { Cog, Download, RefreshCw, Upload, type LucideIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -8,6 +7,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { CATEGORIES, CATEGORY_COLOR, CATEGORY_ICON } from "@/lib/categoryStyle";
 import { useGraphStore } from "@/store/graphStore";
 import type { NodeManifest } from "@mcpstudio/gen-ts/mcpstudio/v1/manifest_pb";
 import { displayName } from "./displayName";
@@ -18,22 +18,7 @@ export const PALETTE_DRAG_TYPE = "application/x-mcpstudio-node-id";
 
 // Fixed section order (UI-SPEC D-03). A section renders only if it has >=1 node;
 // the layout must not assume exactly these four are always populated.
-const SECTION_ORDER = ["Sources", "Processing", "Convert", "Sinks"] as const;
-
-// Category -> CSS custom property declared in index.css (@theme inline).
-const CATEGORY_COLOR: Record<string, string> = {
-  Sources: "var(--color-category-sources)",
-  Processing: "var(--color-category-processing)",
-  Convert: "var(--color-category-convert)",
-  Sinks: "var(--color-category-sinks)",
-};
-
-const CATEGORY_ICON: Record<string, LucideIcon> = {
-  Sources: Download,
-  Processing: Cog,
-  Convert: RefreshCw,
-  Sinks: Upload,
-};
+const SECTION_ORDER = CATEGORIES;
 
 // ---------------------------------------------------------------------------
 
@@ -44,8 +29,7 @@ function PaletteRow({ manifest }: { manifest: NodeManifest }) {
   return (
     <div
       draggable
-      // YOU (hole 1): onDragStart — set manifest.id on the drag's dataTransfer
-      // under PALETTE_DRAG_TYPE. Signature: (e: React.DragEvent) => void.
+      // Canvas onDrop (02-04) reads manifest.id back off this exact key.
       onDragStart={(e) => {
         e.dataTransfer.setData(PALETTE_DRAG_TYPE, manifest.id);
         e.dataTransfer.effectAllowed = "copy";
@@ -121,8 +105,7 @@ export function Palette() {
           <p className="text-muted-foreground">
             Make sure the manifest server is running, then retry.
           </p>
-          {/* YOU (hole 2): a Button that calls fetchRegistry() again on click.
-              Not "clear the error" — actually re-issue the call. */}
+          {/* Retry re-issues the RPC — not just an error clear (graphStore.test.ts). */}
           <Button variant="outline" size="sm" onClick={() => fetchRegistry()}>
             Retry
           </Button>
@@ -144,9 +127,6 @@ export function Palette() {
 
   return (
     <PaletteShell>
-      {/* YOU (hole 3): for each category in SECTION_ORDER, filter `manifests`
-          to that category; if none, render nothing; otherwise render a
-          category-tinted uppercase header + one <PaletteRow> per manifest. */}
       {SECTION_ORDER.map((section) => {
         const inSection = manifests.filter((m) => m.category === section);
         if (inSection.length === 0) return null;
