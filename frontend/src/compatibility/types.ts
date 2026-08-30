@@ -37,3 +37,7 @@ export type Resolution =
   }
   | {kind: "converterPath"; hops: ConverterHop[] } //diff types, BFS found a path
   | {kind: "blocked"; reason: string; fromType: string; toType: string} //no dice, tell the user why
+
+export function assertNever(x: never): never { //call this in a switch default — compile error the day a Resolution kind goes unhandled
+  throw new Error(`unhandled Resolution kind: ${JSON.stringify(x)}`);
+}

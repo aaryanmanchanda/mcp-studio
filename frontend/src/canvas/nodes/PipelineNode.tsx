@@ -1,7 +1,9 @@
 import {
   Handle,
   Position,
+  useConnection,
   useNodeConnections,
+  type Connection,
   type NodeProps,
 } from "@xyflow/react";
 import { X } from "lucide-react";
@@ -11,6 +13,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { resolveCompatibility } from "@/compatibility/resolve";
 import { CATEGORY_COLOR, CATEGORY_ICON } from "@/lib/categoryStyle";
 import { displayName } from "@/palette/displayName";
 import { useGraphStore, type PipelineNode as PipelineNodeType } from "@/store/graphStore";
@@ -19,14 +22,46 @@ import { useGraphStore, type PipelineNode as PipelineNodeType } from "@/store/gr
 // (which RF positions `absolute`) anchors to this row's vertical centre rather
 // than the card's — that is what spaces multiple handles down one edge.
 function SocketRow({
+  nodeId,
   name,
   side,
 }: {
+  nodeId: string;
   name: string;
   side: "source" | "target";
 }) {
   const connections = useNodeConnections({ handleType: side, handleId: name });
   const connected = connections.length > 0;
+
+  // While a wire is being dragged, preview whether dropping it on this handle
+  // would connect or block — run through the same pure resolver `onConnect` uses.
+  const connection = useConnection();
+  const nodes = useGraphStore((s) => s.nodes);
+  const registry = useGraphStore((s) => s.manifestRegistry);
+
+  let drag: "none" | "valid" | "invalid" = "none";
+  if (
+    connection.inProgress &&
+    connection.fromHandle.type !== side &&
+    connection.fromHandle.nodeId !== nodeId
+  ) {
+    const from = connection.fromHandle;
+    const pending: Connection =
+      from.type === "source"
+        ? { source: from.nodeId, sourceHandle: from.id ?? null, target: nodeId, targetHandle: name }
+        : { source: nodeId, sourceHandle: name, target: from.nodeId, targetHandle: from.id ?? null };
+    drag =
+      resolveCompatibility(pending, nodes, registry).kind === "blocked"
+        ? "invalid"
+        : "valid";
+  }
+
+  const borderColor =
+    drag === "invalid"
+      ? "#dc2626"
+      : drag === "valid" || connected
+        ? "#171717"
+        : "#a1a1a1";
 
   return (
     <div
@@ -42,7 +77,7 @@ function SocketRow({
           width: 10,
           height: 10,
           borderWidth: 2,
-          borderColor: connected ? "#171717" : "#a1a1a1",
+          borderColor,
           background: connected ? "#171717" : "#ffffff",
         }}
       />
@@ -113,10 +148,10 @@ export function PipelineNode({ id, data, selected }: NodeProps<PipelineNodeType>
           inset past the dot in SocketRow */}
       <div className="flex flex-col gap-1 py-2">
         {manifest.inputs.map((s) => (
-          <SocketRow key={`in-${s.name}`} name={s.name} side="target" />
+          <SocketRow key={`in-${s.name}`} nodeId={id} name={s.name} side="target" />
         ))}
         {manifest.outputs.map((s) => (
-          <SocketRow key={`out-${s.name}`} name={s.name} side="source" />
+          <SocketRow key={`out-${s.name}`} nodeId={id} name={s.name} side="source" />
         ))}
       </div>
     </div>

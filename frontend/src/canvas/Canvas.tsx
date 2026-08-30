@@ -11,6 +11,7 @@ import {
 
 import { PALETTE_DRAG_TYPE } from "@/palette/Palette";
 import { useGraphStore } from "@/store/graphStore";
+import { BlockedConnectionMessage } from "./BlockedConnectionMessage";
 import { PipelineNode } from "./nodes/PipelineNode";
 
 // Stable reference — React Flow warns (and re-inits) if nodeTypes changes identity.
@@ -27,6 +28,8 @@ function CanvasInner() {
   const deleteNode = useGraphStore((s) => s.deleteNode);
   const selectedNodeId = useGraphStore((s) => s.selectedNodeId);
   const setSelectedNodeId = useGraphStore((s) => s.setSelectedNodeId);
+  const onConnect = useGraphStore((s) => s.onConnect);
+  const dismissBlockedMessage = useGraphStore((s) => s.dismissBlockedMessage);
 
   const onDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -77,6 +80,9 @@ function CanvasInner() {
         nodeTypes={nodeTypes}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
+        onConnect={onConnect}
+        onConnectStart={dismissBlockedMessage}
+        onPaneClick={dismissBlockedMessage}
         onDrop={onDrop}
         onDragOver={onDragOver}
         onSelectionChange={onSelectionChange}
@@ -86,6 +92,7 @@ function CanvasInner() {
       >
         <Background />
         <MiniMap position="bottom-right" pannable zoomable />
+        <BlockedConnectionMessage />
       </ReactFlow>
 
       {nodes.length === 0 && (

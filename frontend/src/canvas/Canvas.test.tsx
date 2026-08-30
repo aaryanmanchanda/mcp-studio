@@ -29,10 +29,13 @@ vi.mock("@xyflow/react", () => ({
     // identity transform — screen coords are flow coords in the test
     screenToFlowPosition: (p: { x: number; y: number }) => p,
   }),
-  // referenced by PipelineNode.tsx at import time, unused here
+  // referenced by PipelineNode.tsx / BlockedConnectionMessage.tsx at import
+  // time, unused in these tests
   Handle: () => null,
   Position: { Left: "left", Right: "right", Top: "top", Bottom: "bottom" },
   useNodeConnections: () => [],
+  useConnection: () => ({ inProgress: false }),
+  ViewportPortal: ({ children }: { children?: React.ReactNode }) => <>{children}</>,
 }));
 
 function dropManifest(manifestId: string) {

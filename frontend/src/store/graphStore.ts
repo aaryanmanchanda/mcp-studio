@@ -2,14 +2,18 @@ import { create } from 'zustand';
 import {
   applyNodeChanges,
   applyEdgeChanges,
+  addEdge,
   type Node,
   type Edge,
   type NodeChange,
   type EdgeChange,
   type XYPosition,
+  type Connection,
 } from '@xyflow/react';
 import { orchestratorClient } from '@/rpc/orchestratorClient';
 import type { NodeManifest } from '@mcpstudio/gen-ts/mcpstudio/v1/manifest_pb';
+import { resolveCompatibility } from "@/compatibility/resolve";
+import {assertNever} from "@/compatibility/types";
 
 type RegistryStatus = "idle" | "loading" | "ready" | "error";
 
@@ -21,6 +25,14 @@ type RegistryStatus = "idle" | "loading" | "ready" | "error";
 export interface PipelineNodeData extends Record<string, unknown> {
   manifestId: string;
   hop?: { from: string; to: string };
+}
+
+export interface BlockedMessage{ //a refused connection — rendered as a popover pinned to the target socket (D-11)
+  nodeId: string; //node the user dropped on
+  handleId: string | null; //socket on that node
+  reason: string;
+  fromType: string; //content types shown mono in the message copy
+  toType: string;
 }
 
 export type PipelineNode = Node<PipelineNodeData>;
@@ -36,6 +48,11 @@ interface GraphState {
   nodes: PipelineNode[];
   edges: Edge[];
   selectedNodeId: string | null;
+
+  // --- connect gesture (Plan 02-04 Task 3) ----------------------------
+  blockedMessage: BlockedMessage | null; //null = nothing refused right now
+  onConnect: (connection: Connection) => void; //resolver -> wire it or block it
+  dismissBlockedMessage: () => void;
 
   onNodesChange: (changes: NodeChange<PipelineNode>[]) => void;
   onEdgesChange: (changes: EdgeChange[]) => void;
@@ -69,6 +86,7 @@ export const useGraphStore = create<GraphState>((set, get) => ({
   nodes: [],
   edges: [],
   selectedNodeId: null,
+  blockedMessage: null,
 
   onNodesChange: (changes) => set({
     nodes: applyNodeChanges(changes, get().nodes)
@@ -77,6 +95,44 @@ export const useGraphStore = create<GraphState>((set, get) => ({
   onEdgesChange: (changes) => set({
     edges: applyEdgeChanges(changes, get().edges)
   }),
+
+  onConnect: (connection) => { //fires when the user drops a wire from one socket onto another
+    const {nodes, manifestRegistry, edges} = get();
+    const resolution = resolveCompatibility(connection, nodes, manifestRegistry); //ask the pure resolver, once
+
+    switch (resolution.kind){ //every kind has a case — default hits assertNever if one's ever missed
+      case "direct": {
+        const dup = edges.some((e) => //are these exact two sockets already wired?
+            e.source === connection.source &&
+            e.sourceHandle === connection.sourceHandle &&
+            e.target === connection.target &&
+            e.targetHandle === connection.targetHandle
+        );
+        if (dup) return; //don't stack a second identical edge
+        set({edges: addEdge(connection, edges), blockedMessage: null}); //wire it, clear any stale message
+        return;
+      }
+      case "blocked": //no wire — pin an explanation to the socket they dropped on
+        set({
+          blockedMessage: {
+            nodeId: connection.target,
+            handleId: connection.targetHandle,
+            reason: resolution.reason,
+            fromType: resolution.fromType,
+            toType: resolution.toType,
+          },
+        });
+        return;
+      case "shapeAdapter": //02-05 fills this in
+        throw new Error("shapeAdapter resolution not implemented yet");
+      case "converterPath": //02-07 fills this in
+        throw new Error("converterPath resolution not implemented yet");
+      default:
+        assertNever(resolution); //unreachable today; compile error the day a 5th kind shows up
+    }
+  },
+
+  dismissBlockedMessage: () => set({blockedMessage: null}), //the message's × , or a click elsewhere on the canvas
 
 
   addNodeFromManifest: (manifestId, position) => {
