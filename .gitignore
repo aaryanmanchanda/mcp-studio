@@ -10,3 +10,4 @@ dist/
 .claude/
 explain.md
 SRS_mcp_pipeline_builder.md
+BUILD_IN_PUBLIC.md
