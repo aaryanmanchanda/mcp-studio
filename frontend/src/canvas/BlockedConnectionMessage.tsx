@@ -22,42 +22,52 @@ export function BlockedConnectionMessage() {
 
   return (
     <ViewportPortal>
+      {/* zero-size anchor pinned to the node's top-left in flow coords */}
       <div
         style={{
           position: "absolute",
-          // sit above the node: move to the node's top-left, then shift up by
-          // this box's own height + an 8px gap
-          transform: `translate(${node.position.x}px, ${node.position.y}px) translate(0, calc(-100% - 8px))`,
-          width: 260,
-          background: "#ffffff",
+          transform: `translate(${node.position.x}px, ${node.position.y}px)`,
         }}
-        className="pointer-events-auto rounded-lg border border-destructive p-3 text-xs leading-relaxed text-foreground shadow-sm"
       >
-        <button
-          type="button"
-          aria-label="Dismiss"
-          onClick={dismiss}
-          className="absolute right-1 top-1 text-neutral-400 hover:text-foreground"
+        {/* panel hangs above that point — bottom edge 8px up from the anchor,
+            growing upward. Never references its own height, so nothing to race
+            on first paint. */}
+        <div
+          style={{
+            position: "absolute",
+            left: 0,
+            bottom: 8,
+            width: 260,
+            background: "#ffffff",
+          }}
+          className="pointer-events-auto rounded-lg border border-destructive p-3 text-xs leading-relaxed text-foreground shadow-sm"
         >
-          <X size={12} />
-        </button>
+          <button
+            type="button"
+            aria-label="Dismiss"
+            onClick={dismiss}
+            className="absolute right-1 top-1 text-neutral-400 hover:text-foreground"
+          >
+            <X size={12} />
+          </button>
 
-        <div className="flex gap-2 pr-3">
-          <span
-            aria-hidden
-            className="mt-1 size-1.5 shrink-0 rounded-full bg-destructive"
-          />
-          {unresolved ? (
-            <p>{message.reason}</p>
-          ) : (
-            <p>
-              No conversion path exists between{" "}
-              <span className="font-mono">{message.fromType}</span> and{" "}
-              <span className="font-mono">{message.toType}</span>. Try wiring
-              compatible sockets, or check the palette for a converter that
-              bridges these two types.
-            </p>
-          )}
+          <div className="flex gap-2 pr-3">
+            <span
+              aria-hidden
+              className="mt-1 size-1.5 shrink-0 rounded-full bg-destructive"
+            />
+            {unresolved ? (
+              <p>{message.reason}</p>
+            ) : (
+              <p>
+                No conversion path exists between{" "}
+                <span className="font-mono">{message.fromType}</span> and{" "}
+                <span className="font-mono">{message.toType}</span>. Try wiring
+                compatible sockets, or check the palette for a converter that
+                bridges these two types.
+              </p>
+            )}
+          </div>
         </div>
       </div>
     </ViewportPortal>
