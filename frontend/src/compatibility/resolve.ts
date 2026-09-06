@@ -1,7 +1,8 @@
 import type {Connection} from "@xyflow/react";
 import type {NodeManifest} from "@mcpstudio/gen-ts/mcpstudio/v1/manifest_pb";
 import {resolveSocket} from "./sockets";
-import type {PlacedNode, Resolution} from "./types";
+import type { PlacedNode, Resolution } from "./types";
+import { buildFieldMapping } from "./fieldMapping";
 
 //try to pull properties from schemaJson, if not found return null, pls dont throw
 function parseProps(schemaJson:string): Record<string, {type?:string}> | null{
@@ -52,15 +53,18 @@ export function resolveCompatibility(
   }
 
   // lucky case: compatible shapes, jumbled or otherwise
-  if (from.contentType === to.contentType){
+  if (from.contentType === to.contentType) {
     // if either has an empty schema just let the matching from/to suffice
     const eitherBlob = from.schemaJson === "" || to.schemaJson === "";
     //if schemas are available, check shape
-    if (eitherBlob || sameShape(from.schemaJson, to.schemaJson)){
-      return{
+    if (eitherBlob || sameShape(from.schemaJson, to.schemaJson)) {
+      return {
         kind: "direct"
       }
     }
+    const { mapping, unmappedSource, unmappedTarget } =
+      buildFieldMapping(from.schemaJson, to.schemaJson);
+    return { kind: "shapeAdapter", mapping, unmappedSource, unmappedTarget };
   }
 // ==== this is where all other conversions for the Compatibility Engine go ==========
 // ====================================================================================

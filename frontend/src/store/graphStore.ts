@@ -123,8 +123,31 @@ export const useGraphStore = create<GraphState>((set, get) => ({
           },
         });
         return;
-      case "shapeAdapter": //02-05 fills this in
-        throw new Error("shapeAdapter resolution not implemented yet");
+        case "shapeAdapter": { //same type, differing schema, carry the field mapping on the edge
+                const dup = edges.some((e) =>
+                    e.source === connection.source &&
+                    e.sourceHandle === connection.sourceHandle &&
+                    e.target === connection.target &&
+                    e.targetHandle === connection.targetHandle
+                );
+                if (dup) return; //identical wire already exists
+                set({
+                  edges: addEdge(
+                    {
+                      ...connection,
+                      type: "shapeAdapter",
+                      data: {
+                        mapping: resolution.mapping,
+                        unmappedSource: resolution.unmappedSource,
+                        unmappedTarget: resolution.unmappedTarget,
+                      },
+                    },
+                    edges,
+                  ),
+                  blockedMessage: null,
+                });
+                return;
+              }
       case "converterPath": //02-07 fills this in
         throw new Error("converterPath resolution not implemented yet");
       default:

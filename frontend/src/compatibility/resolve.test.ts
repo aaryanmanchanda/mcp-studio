@@ -15,7 +15,20 @@ const schemaSnake = JSON.stringify({
     duration_sec: { type: "number" },
   },
 });
-const schemaPascal = JSON.stringify({
+
+// The real shape-adapter pair from orchestrator/cmd/manifestserver/fixtures.go:
+// relevance-filter.clips_out -> trim-clip.clips_in. Same content type; field
+// names differ only in case for two of three fields; `score` has no target and
+// `DurationSec` has no source.
+const schemaRelevanceOut = JSON.stringify({
+  type: "object",
+  properties: {
+    videoid: { type: "string" },
+    sourceurl: { type: "string" },
+    score: { type: "number" },
+  },
+});
+const schemaTrimIn = JSON.stringify({
   type: "object",
   properties: {
     VideoId: { type: "string" },
@@ -35,11 +48,11 @@ const MANIFESTS = [
   {
     id: "relevance-filter",
     inputs: [{ name: "clips_in", contentType: CLIP_LIST, schemaJson: schemaSnake }],
-    outputs: [{ name: "clips_out", contentType: CLIP_LIST, schemaJson: schemaPascal }],
+    outputs: [{ name: "clips_out", contentType: CLIP_LIST, schemaJson: schemaRelevanceOut }],
   },
   {
     id: "trim-clip",
-    inputs: [{ name: "clips_in", contentType: CLIP_LIST, schemaJson: schemaSnake }],
+    inputs: [{ name: "clips_in", contentType: CLIP_LIST, schemaJson: schemaTrimIn }],
     outputs: [{ name: "clip", contentType: "video/quicktime", schemaJson: "" }],
   },
   {
@@ -97,11 +110,38 @@ describe("resolveCompatibility", () => {
     }
   });
 
-  it("blocked: same content type, incompatible schema (shape adapter lands in 02-05)", () => {
+  it("shape adapter: relevance-filter.clips_out -> trim-clip.clips_in (same type, schema differs by case)", () => {
     const nodes = [place("relevance-filter", "r"), place("trim-clip", "t")];
-    // clips_out is PascalCase-keyed, clips_in is snake_case-keyed — same type, different shape
     const res = resolveCompatibility(conn("r", "clips_out", "t", "clips_in"), nodes, MANIFESTS);
-    expect(res.kind).toBe("blocked");
+
+    expect(res.kind).toBe("shapeAdapter");
+    if (res.kind === "shapeAdapter") {
+      expect(res.mapping).toEqual([
+        { from: "videoid", to: "VideoId", via: "caseInsensitive" },
+        { from: "sourceurl", to: "SourceUrl", via: "caseInsensitive" },
+      ]);
+      expect(res.unmappedSource).toEqual(["score"]);
+      expect(res.unmappedTarget).toEqual(["DurationSec"]);
+    }
+  });
+
+  it("direct, not a zero-length shape adapter: same type, schemas structurally equivalent but key order differs", () => {
+    const jumbledA = JSON.stringify({
+      type: "object",
+      properties: { a: { type: "string" }, b: { type: "number" } },
+    });
+    const jumbledB = JSON.stringify({
+      type: "object",
+      properties: { b: { type: "number" }, a: { type: "string" } },
+    });
+    const manifests = [
+      { id: "x", inputs: [], outputs: [{ name: "out", contentType: "text/x", schemaJson: jumbledA }] },
+      { id: "y", inputs: [{ name: "in", contentType: "text/x", schemaJson: jumbledB }], outputs: [] },
+    ] as unknown as NodeManifest[];
+    const nodes = [place("x"), place("y")];
+
+    const res = resolveCompatibility(conn("x", "out", "y", "in"), nodes, manifests);
+    expect(res).toEqual({ kind: "direct" });
   });
 
   it("blocked: a handle id that isn't declared on the manifest", () => {
@@ -117,10 +157,32 @@ describe("resolveCompatibility", () => {
     expect(res.kind).toBe("blocked");
   });
 
-  it("a malformed schema_json returns a Resolution rather than throwing", () => {
+  it("a malformed schema_json on the same-type path returns a Resolution rather than throwing", () => {
+    // Same content type, neither blob, both schemas unparseable — the resolver
+    // hands them to buildFieldMapping, which parses inside a guard (T-02-23) and
+    // returns an empty mapping. The result is a shape adapter that maps nothing,
+    // and whose (empty) unmapped lists still tell the truth.
     const manifests = [
       { id: "a", inputs: [], outputs: [{ name: "out", contentType: "text/x", schemaJson: "{ not json" }] },
       { id: "b", inputs: [{ name: "in", contentType: "text/x", schemaJson: "also { bad" }], outputs: [] },
+    ] as unknown as NodeManifest[];
+    const nodes = [place("a"), place("b")];
+    expect(() =>
+      resolveCompatibility(conn("a", "out", "b", "in"), nodes, manifests),
+    ).not.toThrow();
+    const res = resolveCompatibility(conn("a", "out", "b", "in"), nodes, manifests);
+    expect(res.kind).toBe("shapeAdapter");
+    if (res.kind === "shapeAdapter") {
+      expect(res.mapping).toEqual([]);
+      expect(res.unmappedSource).toEqual([]);
+      expect(res.unmappedTarget).toEqual([]);
+    }
+  });
+
+  it("blocked: different content types with malformed schemas still does not throw", () => {
+    const manifests = [
+      { id: "a", inputs: [], outputs: [{ name: "out", contentType: "text/x", schemaJson: "{ not json" }] },
+      { id: "b", inputs: [{ name: "in", contentType: "text/y", schemaJson: "also { bad" }], outputs: [] },
     ] as unknown as NodeManifest[];
     const nodes = [place("a"), place("b")];
     expect(() =>

@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import type { NodeManifest } from '@mcpstudio/gen-ts/mcpstudio/v1/manifest_pb';
 import { useGraphStore } from './graphStore';
@@ -172,6 +174,24 @@ describe('graphStore — onConnect', () => {
       duration_sec: { type: 'number' },
     },
   });
+  // relevance-filter.clips_out and trim-clip.clips_in per fixtures.go — same
+  // content type, field names differ only in case for two of three fields.
+  const schemaRelevanceOut = JSON.stringify({
+    type: 'object',
+    properties: {
+      videoid: { type: 'string' },
+      sourceurl: { type: 'string' },
+      score: { type: 'number' },
+    },
+  });
+  const schemaTrimIn = JSON.stringify({
+    type: 'object',
+    properties: {
+      VideoId: { type: 'string' },
+      SourceUrl: { type: 'string' },
+      DurationSec: { type: 'number' },
+    },
+  });
 
   // fixture-shaped manifests — only the fields the resolver reads
   const MANIFESTS = [
@@ -183,7 +203,12 @@ describe('graphStore — onConnect', () => {
     {
       id: 'relevance-filter',
       inputs: [{ name: 'clips_in', contentType: CLIP_LIST, schemaJson: clipSchema }],
-      outputs: [{ name: 'clips_out', contentType: CLIP_LIST, schemaJson: clipSchema }],
+      outputs: [{ name: 'clips_out', contentType: CLIP_LIST, schemaJson: schemaRelevanceOut }],
+    },
+    {
+      id: 'trim-clip',
+      inputs: [{ name: 'clips_in', contentType: CLIP_LIST, schemaJson: schemaTrimIn }],
+      outputs: [{ name: 'clip', contentType: 'video/quicktime', schemaJson: '' }],
     },
     {
       id: 'caption-generator',
@@ -229,6 +254,45 @@ describe('graphStore — onConnect', () => {
 
     useGraphStore.getState().onConnect(conn);
     expect(useGraphStore.getState().edges).toHaveLength(1);
+  });
+
+  it('a shape-adapter connection creates one edge that already carries the mapping and both unmapped lists', () => {
+    place('relevance-filter', 'r');
+    place('trim-clip', 't');
+    const conn = { source: 'r', sourceHandle: 'clips_out', target: 't', targetHandle: 'clips_in' };
+
+    useGraphStore.getState().onConnect(conn);
+
+    const { edges, blockedMessage } = useGraphStore.getState();
+    expect(edges).toHaveLength(1);
+    expect(blockedMessage).toBeNull();
+
+    const edge = edges[0];
+    expect(edge.type).toBe('shapeAdapter');
+    // the mapping is present in the same tick the edge first appears — never a
+    // half-populated edge, never a pending state
+    expect(edge.data).toEqual({
+      mapping: [
+        { from: 'videoid', to: 'VideoId', via: 'caseInsensitive' },
+        { from: 'sourceurl', to: 'SourceUrl', via: 'caseInsensitive' },
+      ],
+      unmappedSource: ['score'],
+      unmappedTarget: ['DurationSec'],
+    });
+
+    // re-drawing the identical wire adds no second edge
+    useGraphStore.getState().onConnect(conn);
+    expect(useGraphStore.getState().edges).toHaveLength(1);
+  });
+
+  it('the store never re-infers a mapping: no buildFieldMapping reference, no infer/remap/recompute action', () => {
+    const src = readFileSync(resolve(process.cwd(), 'src/store/graphStore.ts'), 'utf8');
+    // the mapping is computed once, inside resolveCompatibility, and only read here
+    expect(src).not.toMatch(/buildFieldMapping/);
+
+    const state = useGraphStore.getState() as unknown as Record<string, unknown>;
+    const actionNames = Object.keys(state).filter((k) => typeof state[k] === 'function');
+    expect(actionNames.filter((n) => /infer|remap|recompute/i.test(n))).toEqual([]);
   });
 
   it('a blocked connection adds no edge and sets blockedMessage anchored at the target', () => {
