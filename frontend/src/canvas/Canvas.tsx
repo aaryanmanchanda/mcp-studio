@@ -5,6 +5,7 @@ import {
   ReactFlow,
   ReactFlowProvider,
   useReactFlow,
+  type EdgeTypes,
   type NodeTypes,
   type OnSelectionChangeParams,
 } from "@xyflow/react";
@@ -12,10 +13,12 @@ import {
 import { PALETTE_DRAG_TYPE } from "@/palette/Palette";
 import { useGraphStore } from "@/store/graphStore";
 import { BlockedConnectionMessage } from "./BlockedConnectionMessage";
+import { ShapeAdapterEdge } from "./edges/ShapeAdapterEdge";
 import { PipelineNode } from "./nodes/PipelineNode";
 
-// Stable reference — React Flow warns (and re-inits) if nodeTypes changes identity.
+// Stable references — React Flow warns (and re-inits) if these change identity.
 const nodeTypes: NodeTypes = { pipelineNode: PipelineNode };
+const edgeTypes: EdgeTypes = { shapeAdapter: ShapeAdapterEdge };
 
 function CanvasInner() {
   const { screenToFlowPosition } = useReactFlow();
@@ -78,6 +81,7 @@ function CanvasInner() {
         nodes={nodes}
         edges={edges}
         nodeTypes={nodeTypes}
+        edgeTypes={edgeTypes}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
