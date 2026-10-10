@@ -1,5 +1,6 @@
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Canvas } from "@/canvas/Canvas";
+import { ConfigPanel } from "@/config-panel/ConfigPanel";
 import { Palette } from "@/palette/Palette";
 
 function App() {
@@ -12,8 +13,7 @@ function App() {
           <Canvas />
         </div>
 
-        {/* Config panel: filled in Plan 02-06 */}
-        <div className="w-[320px] shrink-0 border-l border-border bg-card" />
+        <ConfigPanel />
       </div>
     </TooltipProvider>
   );
