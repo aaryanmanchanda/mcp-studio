@@ -18,6 +18,7 @@ import { CATEGORY_COLOR, CATEGORY_ICON } from "@/lib/categoryStyle";
 import { displayName } from "@/palette/displayName";
 import { useGraphStore } from "@/store/graphStore";
 import { useConfigStore } from "./configStore";
+import { SecretField } from "./SecretField";
 
 // One non-secret field row. The widget comes from the field's declared value
 // type; UNSPECIFIED (and anything unrecognised) falls through to a text input,
@@ -144,13 +145,13 @@ export function ConfigPanel() {
       </header>
 
       <div className="flex flex-col gap-4 overflow-y-auto p-4">
-        {manifest.configFields
-          // secret fields arrive with SecretField in Task 2; rendering nothing
-          // for them now beats a visible plain text input for a credential
-          .filter((f) => !f.secret)
-          .map((f) => (
+        {manifest.configFields.map((f) =>
+          f.secret ? (
+            <SecretField key={f.name} nodeId={selectedNodeId} field={f} />
+          ) : (
             <FieldRow key={f.name} nodeId={selectedNodeId} field={f} />
-          ))}
+          ),
+        )}
       </div>
     </aside>
   );
