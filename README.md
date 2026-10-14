@@ -23,13 +23,17 @@ converter → upload to YouTube Shorts.*
 built in the open, one vertical phase at a time (6 phases total, currently in
 Phase 2 of 6).
 
+A first end-to-end proof of concept (lecture video to emailed notes, across YouTube, ffmpeg,
+Groq, Gemini and Gmail) is built and runs headlessly with the paid vendors faked. See
+[docs/POC.md](docs/POC.md) for how it works and how to run it.
+
 ### Working and verified
 
 | Area | What's there |
 |------|--------------|
 | **Proto contract** | One set of `.proto` files generating compiling Go, TypeScript, and Python clients via `buf`, with CI gates (`buf lint` / `buf breaking` + a generated-code staleness check) that block schema drift before merge. |
 | **Cross-language transport** | A Go ⇄ Python gRPC round-trip (`scripts/roundtrip.sh`) proving the generated `Runner` contract works across languages, not just that each side compiles. |
-| **Node-manifest registry** | A live Connect-RPC endpoint (`orchestrator/cmd/manifestserver`) serving six fixture node definitions whose sockets deliberately exercise all four cases the compatibility engine must resolve — exact match, shape adapter, multi-hop converter chain, and a genuinely incompatible pair. |
+| **Node-manifest registry** | A live Connect-RPC endpoint (`orchestrator/cmd/orchestrator`) serving the node definitions whose sockets deliberately exercise all four cases the compatibility engine must resolve — exact match, shape adapter, multi-hop converter chain, and a genuinely incompatible pair. |
 | **Secrets vault** | A stdlib-only AES-256-GCM envelope-encryption package (`orchestrator/internal/vault`), unit-tested for nonce uniqueness across 1,000 calls, tamper detection, wrong-key rejection, and key-size enforcement. Not yet wired to storage — that's Phase 3. |
 | **Canvas** | A React Flow canvas fed entirely from a Zustand store: drag nodes from a category-grouped palette, move / select / delete them, and wire sockets. An exact content-type-and-schema match connects silently; an unreconcilable pair is refused with a reason anchored to the socket you aimed at. |
 | **Compatibility engine** | A pure, framework-free resolver: it digs each socket down to a concrete `{ contentType, schemaJson }`, then decides `direct` / `shapeAdapter` / `converterPath` / `blocked` as a discriminated union. The `direct` and `blocked` paths are wired into the canvas; the rule-based field mapper (exact then case-insensitive name matching, no fuzzy) is done, and caching its result on the wire is in progress. |
@@ -109,12 +113,10 @@ Neither can be merged past on `main`.
 ### The canvas
 
 ```bash
-# terminal 1 — the node-manifest registry
-go run ./orchestrator/cmd/manifestserver
-
-# terminal 2 — the frontend
 pnpm install
-pnpm dev                 # http://localhost:5173
+scripts/dev.sh           # postgres + python runner + go orchestrator + frontend
+                         # MCPSTUDIO_DRY_RUN=1 scripts/dev.sh to rehearse with no API keys
+                         # full walkthrough of the demo pipeline: docs/POC.md
 ```
 
 ### Proofs and tests
@@ -134,7 +136,7 @@ pnpm test                      # frontend unit tests
 proto/                       hand-written contracts (source of truth)
 gen/                         generated Go / TS / Python stubs (committed, never hand-edited)
 orchestrator/
-  cmd/manifestserver/        Connect-RPC node-manifest registry
+  cmd/orchestrator/          Connect-RPC server: registry, pipelines, vault, runs
   cmd/roundtrip/             cross-language gRPC round-trip client
   internal/vault/            AES-256-GCM envelope encryption
 runners/python/              runner stub (gRPC server)
@@ -165,7 +167,7 @@ Every unit with domain logic, an algorithm, or a security-relevant decision:
 - **The proto contracts** — `proto/mcpstudio/v1/*.proto`
 - **The AES-256-GCM vault and its test suite** — `orchestrator/internal/vault/`
   (crypto tests are worth internalising, so this suite is hand-written too)
-- **The Go manifest server and fixtures** — `orchestrator/cmd/manifestserver/`,
+- **The Go manifest server and fixtures** — `orchestrator/internal/registry/`,
   `orchestrator/cmd/roundtrip/`
 - **The compatibility engine** — socket resolution, the `resolveCompatibility`
   decision function, and the rule-based field mapper —
