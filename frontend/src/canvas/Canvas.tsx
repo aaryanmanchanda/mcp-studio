@@ -13,6 +13,8 @@ import {
 import { PALETTE_DRAG_TYPE } from "@/palette/Palette";
 import { useGraphStore } from "@/store/graphStore";
 import { BlockedConnectionMessage } from "./BlockedConnectionMessage";
+import { RunBar } from "@/run/RunBar";
+import { ConverterPreviewDialog } from "./ConverterPreviewDialog";
 import { ShapeAdapterEdge } from "./edges/ShapeAdapterEdge";
 import { PipelineNode } from "./nodes/PipelineNode";
 
@@ -97,7 +99,10 @@ function CanvasInner() {
         <Background />
         <MiniMap position="bottom-right" pannable zoomable />
         <BlockedConnectionMessage />
+        <ConverterPreviewDialog />
       </ReactFlow>
+
+      <RunBar />
 
       {nodes.length === 0 && (
         <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-1 text-center">

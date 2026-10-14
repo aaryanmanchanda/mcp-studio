@@ -3,6 +3,7 @@ import type {NodeManifest} from "@mcpstudio/gen-ts/mcpstudio/v1/manifest_pb";
 import {resolveSocket} from "./sockets";
 import type { PlacedNode, Resolution } from "./types";
 import { buildFieldMapping } from "./fieldMapping";
+import { findConverterPathCached } from "./bfs";
 
 //try to pull properties from schemaJson, if not found return null, pls dont throw
 function parseProps(schemaJson:string): Record<string, {type?:string}> | null{
@@ -42,13 +43,24 @@ export function resolveCompatibility(
               resolveSocket(connection.target, connection.targetHandle, "target", nodes, registry)
               : null;
 
-  // if either doesn't resolve it's a blocked connection boo hoo
-  if ( !from || !to ){
+  // say which side failed, so the message points at the right socket
+  if (!from || !to) {
+    const which = !from && !to ? "Neither socket" : !from ? "The source socket" : "The target socket";
     return {
       kind: "blocked",
-      reason: "One or both sockets could not be resolved against the registry.",
+      reason: `${which} could not be resolved against the registry.`,
       fromType: from?.contentType ?? "unknown",
       toType: to?.contentType ?? "unknown"
+    };
+  }
+
+  // an empty content type would send the converter search off looking for "", so refuse it here
+  if (from.contentType === "" || to.contentType === "") {
+    return {
+      kind: "blocked",
+      reason: `${from.contentType === "" ? "The source" : "The target"} socket has no content type.`,
+      fromType: from.contentType || "unknown",
+      toType: to.contentType || "unknown"
     };
   }
 
@@ -66,8 +78,14 @@ export function resolveCompatibility(
       buildFieldMapping(from.schemaJson, to.schemaJson);
     return { kind: "shapeAdapter", mapping, unmappedSource, unmappedTarget };
   }
-// ==== this is where all other conversions for the Compatibility Engine go ==========
-// ====================================================================================
+  // different content types: is there a chain of converter nodes that bridges them?
+  // runs synchronously in this same tick, which is why no loading state exists anywhere for it
+  const hops = findConverterPathCached(from.contentType, to.contentType, registry);
+  if (hops && hops.length > 0) {
+    return { kind: "converterPath", hops };
+  }
+
+  // the registry was searched and holds no route, so this block now genuinely means "no way to connect these"
   return {
     kind: "blocked",
     reason: `No conversion path exists between ${from.contentType} and ${to.contentType}.`,

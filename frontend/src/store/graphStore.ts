@@ -13,7 +13,7 @@ import {
 import { orchestratorClient } from '@/rpc/orchestratorClient';
 import type { NodeManifest } from '@mcpstudio/gen-ts/mcpstudio/v1/manifest_pb';
 import { resolveCompatibility } from "@/compatibility/resolve";
-import {assertNever} from "@/compatibility/types";
+import {assertNever, type ConverterHop} from "@/compatibility/types";
 
 type RegistryStatus = "idle" | "loading" | "ready" | "error";
 
@@ -35,6 +35,12 @@ export interface BlockedMessage{ //a refused connection — rendered as a popove
   toType: string;
 }
 
+// a converter path the user hasn't confirmed yet: the exact hops that were previewed, plus the wire they were dropped on
+export interface PendingConverter {
+  hops: ConverterHop[];
+  connection: Connection;
+}
+
 export type PipelineNode = Node<PipelineNodeData>;
 
 interface GraphState {
@@ -53,6 +59,11 @@ interface GraphState {
   blockedMessage: BlockedMessage | null; //null = nothing refused right now
   onConnect: (connection: Connection) => void; //resolver -> wire it or block it
   dismissBlockedMessage: () => void;
+
+  pendingConverter: PendingConverter | null; //set by onConnect, consumed by insert (confirm) or cancel
+  insertConverterPath: () => void;
+  cancelConverterPath: () => void;
+  loadGraph: (nodes: PipelineNode[], edges: Edge[]) => void; //replace the canvas with a saved pipeline
 
   onNodesChange: (changes: NodeChange<PipelineNode>[]) => void;
   onEdgesChange: (changes: EdgeChange[]) => void;
@@ -87,6 +98,7 @@ export const useGraphStore = create<GraphState>((set, get) => ({
   edges: [],
   selectedNodeId: null,
   blockedMessage: null,
+  pendingConverter: null,
 
   onNodesChange: (changes) => set({
     nodes: applyNodeChanges(changes, get().nodes)
@@ -148,14 +160,70 @@ export const useGraphStore = create<GraphState>((set, get) => ({
                 });
                 return;
               }
-      case "converterPath": //02-07 fills this in
-        throw new Error("converterPath resolution not implemented yet");
+      case "converterPath": //stage it, nothing touches the graph until the user confirms the preview (D-09)
+        set({ pendingConverter: { hops: resolution.hops, connection }, blockedMessage: null });
+        return;
       default:
         assertNever(resolution); //unreachable today; compile error the day a 5th kind shows up
     }
   },
 
   dismissBlockedMessage: () => set({blockedMessage: null}), //the message's × , or a click elsewhere on the canvas
+
+  cancelConverterPath: () => set({ pendingConverter: null }), //nothing was changed, so nothing to undo
+
+  insertConverterPath: () => {
+    const { pendingConverter, nodes, edges, manifestRegistry } = get();
+    if (!pendingConverter) return; //a second confirm, or a confirm after cancel, is a no-op
+    const { hops, connection } = pendingConverter;
+    const src = nodes.find((n) => n.id === connection.source);
+    const dst = nodes.find((n) => n.id === connection.target);
+    if (!src || !dst || !connection.sourceHandle || !connection.targetHandle) {
+      set({ pendingConverter: null });
+      return;
+    }
+
+    // one ordinary node per hop (D-10: no group node), laid out along the line between the two ends
+    const added: PipelineNode[] = [];
+    for (let i = 0; i < hops.length; i++) {
+      const t = (i + 1) / (hops.length + 1);
+      added.push({
+        id: crypto.randomUUID(),
+        type: "pipelineNode",
+        position: {
+          x: src.position.x + (dst.position.x - src.position.x) * t,
+          y: src.position.y + (dst.position.y - src.position.y) * t,
+        },
+        data: { manifestId: hops[i].nodeManifestId, hop: { from: hops[i].from, to: hops[i].to } }, //the hop is what gives the wildcard sockets a real type
+      });
+    }
+
+    // wire source -> hop 1 -> ... -> hop N -> target, using each converter's own socket names
+    const inName = (n: PipelineNode) => manifestRegistry.find((m) => m.id === n.data.manifestId)?.inputs[0]?.name;
+    const outName = (n: PipelineNode) => manifestRegistry.find((m) => m.id === n.data.manifestId)?.outputs[0]?.name;
+    const chain = [{ id: src.id, out: connection.sourceHandle }, ...added.map((n) => ({ id: n.id, out: outName(n) }))];
+    const newEdges: Edge[] = [];
+    for (let i = 0; i < added.length; i++) {
+      const to = inName(added[i]);
+      const from = chain[i].out;
+      if (!to || !from) { //converter manifest missing its sockets: bail without a half-built chain
+        set({ pendingConverter: null });
+        return;
+      }
+      newEdges.push({ id: crypto.randomUUID(), source: chain[i].id, sourceHandle: from, target: added[i].id, targetHandle: to });
+    }
+    const last = chain[chain.length - 1];
+    if (!last.out) {
+      set({ pendingConverter: null });
+      return;
+    }
+    newEdges.push({ id: crypto.randomUUID(), source: last.id, sourceHandle: last.out, target: dst.id, targetHandle: connection.targetHandle });
+
+    //all in one update, and the pending slot clears in the same breath so a double click can't insert twice
+    set({ nodes: [...nodes, ...added], edges: [...edges, ...newEdges], pendingConverter: null, blockedMessage: null });
+  },
+
+  loadGraph: (nodes, edges) => set({ nodes, edges, selectedNodeId: null, blockedMessage: null, pendingConverter: null }),
 
 
   addNodeFromManifest: (manifestId, position) => {

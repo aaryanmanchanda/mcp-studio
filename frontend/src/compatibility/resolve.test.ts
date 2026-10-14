@@ -206,3 +206,72 @@ describe("resolveCompatibility", () => {
     expect(JSON.stringify(registry)).toBe(registryBefore);
   });
 });
+
+// the converter branch (02-07): a registry that also holds the fixture converter
+const CONVERTER = {
+  id: "format-converter",
+  inputs: [{ name: "media_in", contentType: "application/x-mcpstudio-converter-wildcard", schemaJson: "" }],
+  outputs: [{ name: "media_out", contentType: "application/x-mcpstudio-converter-wildcard", schemaJson: "" }],
+  converts: [
+    { from: "video/quicktime", to: "video/mp4" },
+    { from: "video/mp4", to: "video/webm" },
+  ],
+} as unknown as NodeManifest;
+const WITH_CONVERTER = [...MANIFESTS, CONVERTER];
+
+describe("resolveCompatibility: converter path and blocked", () => {
+  it("converter: trim-clip.clip -> upload-post.video_in is two ordered hops", () => {
+    const nodes = [place("trim-clip", "t"), place("upload-post", "u")];
+    const res = resolveCompatibility(conn("t", "clip", "u", "video_in"), nodes, WITH_CONVERTER);
+    expect(res.kind).toBe("converterPath");
+    if (res.kind === "converterPath") {
+      expect(res.hops.map((h) => [h.from, h.to])).toEqual([
+        ["video/quicktime", "video/mp4"],
+        ["video/mp4", "video/webm"],
+      ]);
+    }
+  });
+
+  it("blocked: captions -> upload-post still has no route, and the reason names both types", () => {
+    const nodes = [place("caption-generator", "c"), place("upload-post", "u")];
+    const res = resolveCompatibility(conn("c", "captions", "u", "video_in"), nodes, WITH_CONVERTER);
+    expect(res.kind).toBe("blocked");
+    if (res.kind === "blocked") {
+      expect(res.reason).toContain("application/vnd.mcpstudio.captions+json");
+      expect(res.reason).toContain("video/webm");
+    }
+  });
+
+  it("blocked (not a throw): an unresolvable handle id says which side", () => {
+    const nodes = [place("trim-clip", "t"), place("upload-post", "u")];
+    const res = resolveCompatibility(conn("t", "nope", "u", "video_in"), nodes, WITH_CONVERTER);
+    expect(res.kind).toBe("blocked");
+    if (res.kind === "blocked") expect(res.reason).toContain("source");
+  });
+
+  it("blocked: a socket with an empty content type never reaches the search", () => {
+    const manifests = [
+      { id: "x", inputs: [], outputs: [{ name: "out", contentType: "", schemaJson: "" }] },
+      { id: "y", inputs: [{ name: "in", contentType: "video/webm", schemaJson: "" }], outputs: [] },
+      CONVERTER,
+    ] as unknown as NodeManifest[];
+    const res = resolveCompatibility(conn("x1", "out", "y1", "in"), [place("x", "x1"), place("y", "y1")], manifests);
+    expect(res.kind).toBe("blocked");
+    if (res.kind === "blocked") expect(res.reason).toContain("no content type");
+  });
+
+  it("a same-type pair is direct and never touches the converter search", () => {
+    const nodes = [place("trim-clip", "t"), place("caption-generator", "c")];
+    expect(resolveCompatibility(conn("t", "clip", "c", "video_in"), nodes, WITH_CONVERTER)).toEqual({ kind: "direct" });
+  });
+
+  it("all four resolution kinds are reachable from fixture inputs", () => {
+    const kinds = new Set([
+      resolveCompatibility(conn("s", "clips", "r", "clips_in"), [place("youtube-scraper", "s"), place("relevance-filter", "r")], WITH_CONVERTER).kind,
+      resolveCompatibility(conn("r", "clips_out", "t", "clips_in"), [place("relevance-filter", "r"), place("trim-clip", "t")], WITH_CONVERTER).kind,
+      resolveCompatibility(conn("t", "clip", "u", "video_in"), [place("trim-clip", "t"), place("upload-post", "u")], WITH_CONVERTER).kind,
+      resolveCompatibility(conn("c", "captions", "u", "video_in"), [place("caption-generator", "c"), place("upload-post", "u")], WITH_CONVERTER).kind,
+    ]);
+    expect([...kinds].sort()).toEqual(["blocked", "converterPath", "direct", "shapeAdapter"]);
+  });
+});

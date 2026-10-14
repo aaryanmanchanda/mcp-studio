@@ -333,3 +333,103 @@ describe('graphStore — onConnect', () => {
     expect(useGraphStore.getState().blockedMessage).toBeNull();
   });
 });
+
+// ---------------------------------------------------------------------------
+// 02-07: converter path staging and insertion
+// ---------------------------------------------------------------------------
+describe('graphStore — converter path', () => {
+  const converter = {
+    id: 'format-converter',
+    inputs: [{ name: 'media_in', contentType: 'application/x-mcpstudio-converter-wildcard', schemaJson: '' }],
+    outputs: [{ name: 'media_out', contentType: 'application/x-mcpstudio-converter-wildcard', schemaJson: '' }],
+    converts: [
+      { from: 'video/quicktime', to: 'video/mp4' },
+      { from: 'video/mp4', to: 'video/webm' },
+    ],
+  };
+  const registry = [
+    { id: 'trim-clip', inputs: [], outputs: [{ name: 'clip', contentType: 'video/quicktime', schemaJson: '' }], converts: [] },
+    { id: 'upload-post', inputs: [{ name: 'video_in', contentType: 'video/webm', schemaJson: '' }], outputs: [], converts: [] },
+    converter,
+  ] as unknown as NodeManifest[];
+  const wire = { source: 't', sourceHandle: 'clip', target: 'u', targetHandle: 'video_in' };
+
+  beforeEach(() => {
+    useGraphStore.setState({
+      manifestRegistry: registry,
+      nodes: [
+        { id: 't', type: 'pipelineNode', position: { x: 0, y: 0 }, data: { manifestId: 'trim-clip' } },
+        { id: 'u', type: 'pipelineNode', position: { x: 900, y: 300 }, data: { manifestId: 'upload-post' } },
+      ],
+      edges: [],
+      pendingConverter: null,
+      blockedMessage: null,
+    });
+  });
+
+  it('a converter connection stages the path and changes nothing on the canvas', () => {
+    useGraphStore.getState().onConnect(wire);
+    const s = useGraphStore.getState();
+    expect(s.pendingConverter?.hops).toHaveLength(2);
+    expect(s.nodes).toHaveLength(2);
+    expect(s.edges).toHaveLength(0);
+  });
+
+  it('confirming adds 2 nodes and 3 edges, hops in order, each node carrying its own hop', () => {
+    useGraphStore.getState().onConnect(wire);
+    useGraphStore.getState().insertConverterPath();
+    const { nodes, edges, pendingConverter } = useGraphStore.getState();
+
+    expect(pendingConverter).toBeNull();
+    expect(nodes).toHaveLength(4);
+    expect(edges).toHaveLength(3);
+    const added = nodes.slice(2);
+    expect(added.map((n) => n.data.hop)).toEqual([
+      { from: 'video/quicktime', to: 'video/mp4' },
+      { from: 'video/mp4', to: 'video/webm' },
+    ]);
+    // the chain t -> c1 -> c2 -> u, using the converter's own socket names
+    expect(edges.map((e) => [e.source, e.sourceHandle, e.target, e.targetHandle])).toEqual([
+      ['t', 'clip', added[0].id, 'media_in'],
+      [added[0].id, 'media_out', added[1].id, 'media_in'],
+      [added[1].id, 'media_out', 'u', 'video_in'],
+    ]);
+  });
+
+  it('a second confirm adds nothing more', () => {
+    useGraphStore.getState().onConnect(wire);
+    useGraphStore.getState().insertConverterPath();
+    useGraphStore.getState().insertConverterPath();
+    expect(useGraphStore.getState().nodes).toHaveLength(4);
+    expect(useGraphStore.getState().edges).toHaveLength(3);
+  });
+
+  it('cancel leaves the canvas exactly as it was, and a confirm after cancel is a no-op', () => {
+    useGraphStore.getState().onConnect(wire);
+    useGraphStore.getState().cancelConverterPath();
+    useGraphStore.getState().insertConverterPath();
+    const s = useGraphStore.getState();
+    expect(s.pendingConverter).toBeNull();
+    expect(s.nodes).toHaveLength(2);
+    expect(s.edges).toHaveLength(0);
+  });
+
+  it('each inserted converter is individually deletable and leaves its neighbour standing', () => {
+    useGraphStore.getState().onConnect(wire);
+    useGraphStore.getState().insertConverterPath();
+    const [c1, c2] = useGraphStore.getState().nodes.slice(2);
+    useGraphStore.getState().deleteNode(c1.id);
+    const { nodes, edges } = useGraphStore.getState();
+    expect(nodes.map((n) => n.id)).toContain(c2.id);
+    expect(nodes.map((n) => n.id)).not.toContain(c1.id);
+    // c2 keeps its outgoing wire to the target, loses the one it had from c1
+    expect(edges.map((e) => [e.source, e.target])).toEqual([[c2.id, 'u']]);
+  });
+
+  it('there is no group concept: no node or edge type represents a chain as one entity', () => {
+    useGraphStore.getState().onConnect(wire);
+    useGraphStore.getState().insertConverterPath();
+    const types = new Set(useGraphStore.getState().nodes.map((n) => n.type));
+    expect([...types]).toEqual(['pipelineNode']);
+  });
+});
