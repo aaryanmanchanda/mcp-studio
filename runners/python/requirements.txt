@@ -1,2 +1,4 @@
 grpcio==1.83.0
 protobuf==7.35.1
+requests>=2.32
+yt-dlp
