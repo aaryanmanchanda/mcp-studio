@@ -14,12 +14,12 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      // Forwards RPC calls to the Go manifest server, stripping the /rpc
+      // Forwards RPC calls to the Go orchestrator, stripping the /rpc
       // prefix so the upstream sees the bare /mcpstudio.v1.Orchestrator/...
       // procedure path the Go mux registered. This keeps every RPC call
       // same-origin in dev, so CORS never needs to be solved on the Go side.
       "/rpc": {
-        target: "http://127.0.0.1:8080",
+        target: "http://127.0.0.1:8787",
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/rpc/, ""),
       },

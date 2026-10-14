@@ -12,6 +12,8 @@ interface ConfigState {
   setValue: (nodeId: string, field: string, value: ConfigValue) => void;
   setConfigured: (nodeId: string, field: string, configured: boolean) => void; //bool so we don't store any secret user creds
   clearNode: (nodeId: string) => void;
+  replaceConfigured: (entries: { nodeId: string; field: string }[]) => void; //rebuild the flags from what the vault says it holds
+  replaceValues: (values: ByNode<ConfigValue>) => void; //a loaded pipeline brings its own non-secret values
 }
 
 export const useConfigStore = create<ConfigState>()( // workaround for ts to infer both state and middleware type
@@ -35,6 +37,18 @@ export const useConfigStore = create<ConfigState>()( // workaround for ts to inf
             [nodeId]: {...state.configured[nodeId], [field]: configured},
           },
         })),
+
+      // the vault only ever tells us which (node, field) pairs exist, never what they hold
+      replaceConfigured: (entries) =>
+        set(() => {
+          const configured: ByNode<boolean> = {};
+          for (const { nodeId, field } of entries) {
+            configured[nodeId] = { ...configured[nodeId], [field]: true };
+          }
+          return { configured };
+        }),
+
+      replaceValues: (values) => set({ values }),
 
       clearNode: (nodeId) =>
         set((state) => {

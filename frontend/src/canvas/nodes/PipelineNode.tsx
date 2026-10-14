@@ -16,6 +16,8 @@ import {
 import { resolveCompatibility } from "@/compatibility/resolve";
 import { CATEGORY_COLOR, CATEGORY_ICON } from "@/lib/categoryStyle";
 import { displayName } from "@/palette/displayName";
+import { StatusIcon } from "@/run/RunBar";
+import { useRunStore } from "@/run/runStore";
 import { useGraphStore, type PipelineNode as PipelineNodeType } from "@/store/graphStore";
 
 // One input/output socket row. The row is `relative` so the React Flow Handle
@@ -97,6 +99,7 @@ export function PipelineNode({ id, data, selected }: NodeProps<PipelineNodeType>
     s.manifestRegistry.find((m) => m.id === data.manifestId),
   );
   const deleteNode = useGraphStore((s) => s.deleteNode);
+  const nodeRun = useRunStore((s) => s.nodeRuns[id]); //undefined until a run touches this node
 
   // Registry not loaded, or an unknown manifest id — render something inert
   // rather than throwing inside React Flow's render loop.
@@ -146,6 +149,13 @@ export function PipelineNode({ id, data, selected }: NodeProps<PipelineNodeType>
 
       {/* full-bleed rows so each Handle lands on the card edge; labels are
           inset past the dot in SocketRow */}
+      {nodeRun && ( //live run status, mirrors the results panel
+        <div className="flex items-center gap-2 border-t border-border px-3 py-1.5 text-xs text-muted-foreground">
+          <StatusIcon status={nodeRun.status} />
+          <span className={nodeRun.status === "failed" ? "text-destructive" : ""}>{nodeRun.status}</span>
+        </div>
+      )}
+
       <div className="flex flex-col gap-1 py-2">
         {manifest.inputs.map((s) => (
           <SocketRow key={`in-${s.name}`} nodeId={id} name={s.name} side="target" />

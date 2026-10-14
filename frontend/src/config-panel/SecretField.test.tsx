@@ -1,14 +1,21 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import {
   ConfigFieldValueType,
   type ConfigFieldDef,
 } from "@mcpstudio/gen-ts/mcpstudio/v1/manifest_pb";
 
+import { orchestratorClient } from "@/rpc/orchestratorClient";
+import { storageDump } from "@/test/storage";
 import { SecretField } from "./SecretField";
 import { useConfigStore } from "./configStore";
+
+vi.mock("@/rpc/orchestratorClient", () => ({
+  orchestratorClient: { setSecret: vi.fn() },
+}));
+const setSecret = vi.mocked(orchestratorClient.setSecret);
 
 const SECRET = "sk-DISTINCTIVE-credential-9f3a";
 
@@ -21,10 +28,14 @@ const field = {
 } as unknown as ConfigFieldDef;
 
 const input = () => screen.getByLabelText("groq_api_key") as HTMLInputElement;
+const type = (v: string) => fireEvent.change(input(), { target: { value: v } });
+const saveBtn = () => screen.getByRole("button", { name: /^(Save|Replace)$/ });
 
 beforeEach(() => {
   localStorage.clear();
   useConfigStore.setState({ values: {}, configured: {} });
+  setSecret.mockReset();
+  setSecret.mockResolvedValue({ configured: true } as never);
 });
 
 describe("SecretField", () => {
@@ -33,54 +44,75 @@ describe("SecretField", () => {
     expect(input().type).toBe("password");
   });
 
-  it("sets the configured flag without the typed characters reaching the store", () => {
+  it("typing alone sends nothing and flags nothing", () => {
     render(<SecretField nodeId="n1" field={field} />);
-    fireEvent.change(input(), { target: { value: SECRET } });
+    type(SECRET);
+    expect(setSecret).not.toHaveBeenCalled();
+    expect(useConfigStore.getState().configured.n1).toBeUndefined();
+  });
+
+  it("Save sends the credential once, empties the input, and shows the badge", async () => {
+    render(<SecretField nodeId="n1" field={field} />);
+    type(SECRET);
+    fireEvent.click(saveBtn());
+
+    await waitFor(() => expect(screen.getByText("Saved to vault")).toBeTruthy());
+    expect(setSecret).toHaveBeenCalledTimes(1);
+    expect(setSecret).toHaveBeenCalledWith({ nodeId: "n1", field: "groq_api_key", value: SECRET });
+    expect(input().value).toBe("");
+    expect(useConfigStore.getState().configured.n1.groq_api_key).toBe(true);
+  });
+
+  it("the credential is in neither the store nor browser storage, even after saving", async () => {
+    render(<SecretField nodeId="n1" field={field} />);
+    type(SECRET);
+    fireEvent.click(saveBtn());
+    await waitFor(() => expect(screen.getByText("Saved to vault")).toBeTruthy());
 
     const { values, configured } = useConfigStore.getState();
-    expect(configured.n1.groq_api_key).toBe(true);
     expect(JSON.stringify({ values, configured })).not.toContain(SECRET);
+    expect(JSON.stringify(storageDump())).not.toContain(SECRET);
   });
 
-  it("shows the badge once something is entered", () => {
-    render(<SecretField nodeId="n1" field={field} />);
-    expect(screen.queryByText("Value entered")).toBeNull();
-    fireEvent.change(input(), { target: { value: SECRET } });
-    expect(screen.getByText("Value entered")).toBeTruthy();
-  });
-
-  it("remounts empty while the badge remains (D-07)", () => {
+  it("remounts empty while the badge remains (D-07)", async () => {
     const first = render(<SecretField nodeId="n1" field={field} />);
-    fireEvent.change(input(), { target: { value: SECRET } });
+    type(SECRET);
+    fireEvent.click(saveBtn());
+    await waitFor(() => expect(screen.getByText("Saved to vault")).toBeTruthy());
     first.unmount();
 
     render(<SecretField nodeId="n1" field={field} />);
     expect(input().value).toBe("");
-    expect(screen.getByText("Value entered")).toBeTruthy();
+    expect(screen.getByText("Saved to vault")).toBeTruthy();
   });
 
-  it("clearing the input resets the flag and hides the badge", () => {
+  it("a failed save shows the error, keeps the buffer for a retry, and does not claim success", async () => {
+    setSecret.mockRejectedValue(new Error("vault is down"));
     render(<SecretField nodeId="n1" field={field} />);
-    fireEvent.change(input(), { target: { value: SECRET } });
-    fireEvent.change(input(), { target: { value: "" } });
+    type(SECRET);
+    fireEvent.click(saveBtn());
 
-    expect(useConfigStore.getState().configured.n1.groq_api_key).toBe(false);
-    expect(screen.queryByText("Value entered")).toBeNull();
+    await waitFor(() => expect(screen.getByRole("alert").textContent).toContain("vault is down"));
+    expect(input().value).toBe(SECRET);
+    expect(screen.queryByText("Saved to vault")).toBeNull();
+    expect(useConfigStore.getState().configured.n1).toBeUndefined();
   });
 
-  it("has no reveal or unmask control", () => {
+  it("has no reveal or unmask control, and nothing echoes the value", () => {
     render(<SecretField nodeId="n1" field={field} />);
-    expect(screen.queryAllByRole("button")).toHaveLength(0);
+    expect(screen.queryByRole("button", { name: /show|reveal|unmask|eye/i })).toBeNull();
     expect(input().placeholder).toBe("");
   });
 
-  it("badge copy avoids claiming storage or security (source check)", () => {
-    const src = readFileSync(
-      resolve(__dirname, "SecretField.tsx"),
-      "utf8",
-    );
-    // only user-visible text matters; strip comments first
-    const visible = src.replace(/\/\/.*$/gm, "").replace(/\{\/\*[\s\S]*?\*\/\}/g, "");
-    expect(visible).not.toMatch(/\b(stored|saved|encrypted|secure)\b/i);
+  it("only this component and the config store touch the credential: no setter takes a string", () => {
+    const src = readFileSync(resolve(process.cwd(), "src/config-panel/configStore.ts"), "utf8");
+    expect(src).toMatch(/setConfigured: \(nodeId: string, field: string, configured: boolean\)/);
+  });
+
+  it("the copy never calls the browser's storage secure (source check)", () => {
+    const src = readFileSync(resolve(process.cwd(), "src/config-panel/SecretField.tsx"), "utf8");
+    const visible = src.replace(/\/\/.*$/gm, "");
+    expect(visible).not.toMatch(/\bsecure[d]?\b/i);
+    expect(visible).not.toMatch(/localStorage/);
   });
 });
