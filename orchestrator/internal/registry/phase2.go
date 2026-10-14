@@ -1,12 +1,12 @@
 // phase 2 stubs of the real v1 node set (D-01), to be kept and fleshed out phase 3 onwards
 // ship of theseus?
-package main
+package registry
 
 import (
 	mcpstudiov1 "github.com/mcpstudio/mcp_studio/gen/go/mcpstudio/v1"
 )
 
-func fixtureManifests() []*mcpstudiov1.NodeManifest {
+func phase2Fixtures() []*mcpstudiov1.NodeManifest {
 	return []*mcpstudiov1.NodeManifest{
 		{
 			Id:       "youtube-scraper",
@@ -204,7 +204,7 @@ func fixtureManifests() []*mcpstudiov1.NodeManifest {
 					SchemaJson:  ``,
 				},
 			},
-			Converts: []*mcpstudiov1.ConverterPair{ // 2 hop conversion quicktime->mp4->webm (BFS path to be added)
+			Converts: []*mcpstudiov1.ConverterPair{ // 2 hop conversion quicktime->mp4->webm, plus the audio extract the demo pipeline needs
 				{
 					From: "video/quicktime",
 					To:   "video/mp4",
@@ -212,6 +212,10 @@ func fixtureManifests() []*mcpstudiov1.NodeManifest {
 				{
 					From: "video/mp4",
 					To:   "video/webm",
+				},
+				{
+					From: "video/mp4", // youtube-download -> groq-transcribe, the runner shrinks it to mono 16k mp3
+					To:   "audio/mpeg",
 				},
 			},
 		},

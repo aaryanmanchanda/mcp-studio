@@ -7,7 +7,7 @@ cd "$REPO_ROOT"
 
 
 ADDRESS_HOST="127.0.0.1"
-ADDRESS_PORT="8080"
+ADDRESS_PORT="8788"
 
 SERVER_PID=""
 cleanup() {
@@ -20,8 +20,8 @@ trap cleanup EXIT
 # clean up on exit
 
 echo "starting manifest server..."
-BIN="$(mktemp -d)/manifestserver"
-go build -o "$BIN" ./orchestrator/cmd/manifestserver/
+BIN="$(mktemp -d)/orchestrator"
+go build -o "$BIN" ./orchestrator/cmd/orchestrator/
 
 "$BIN" -addr "${ADDRESS_HOST}:${ADDRESS_PORT}" &
 SERVER_PID=$!
@@ -52,10 +52,10 @@ MANIFEST_COUNT=$(echo "$RESPONSE" | jq '.manifests | length')
 CATEGORY_COUNT=$(echo "$RESPONSE" | jq '[.manifests[].category] | unique | length')
 
 
-if [ "$MANIFEST_COUNT" -eq 6 ] && [ "$CATEGORY_COUNT" -eq 4 ]; then
+if [ "$MANIFEST_COUNT" -eq 10 ] && [ "$CATEGORY_COUNT" -eq 4 ]; then
   echo "OK: ${MANIFEST_COUNT} manifests across ${CATEGORY_COUNT} categories"
   exit 0
 else
-  echo "FAILED: expected 6 manifests / 4 categories, got ${MANIFEST_COUNT} / ${CATEGORY_COUNT}" >&2
+  echo "FAILED: expected 10 manifests / 4 categories, got ${MANIFEST_COUNT} / ${CATEGORY_COUNT}" >&2
   exit 1
 fi

@@ -1,0 +1,20 @@
+# local postgres for pipelines + vault ciphertext. nothing else runs in docker yet.
+services:
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: mcpstudio
+      POSTGRES_PASSWORD: mcpstudio
+      POSTGRES_DB: mcpstudio
+    ports:
+      - "127.0.0.1:5433:5432" # 5433 so it can't collide with a postgres you already run on 5432
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mcpstudio"]
+      interval: 2s
+      timeout: 3s
+      retries: 20
+
+volumes:
+  pgdata:

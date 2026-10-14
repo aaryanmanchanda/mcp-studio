@@ -15,3 +15,7 @@ BUILD_IN_PUBLIC.md
 # Personal/local-only: build-in-public + recruitment assets
 soundverse/
 *.excalidraw
+
+# local run artifacts and secrets
+data/
+.env
