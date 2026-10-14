@@ -4,19 +4,20 @@ managed:
   override:
     - file_option: go_package_prefix
       value: github.com/mcpstudio/mcp_studio/gen/go
+# plugin versions are pinned so regenerating can't silently outrun the runtime packages in go.mod / requirements.txt
 plugins:
-  - remote: buf.build/protocolbuffers/go
+  - remote: buf.build/protocolbuffers/go:v1.36.12
     out: gen/go
     opt: paths=source_relative
-  - remote: buf.build/grpc/go
+  - remote: buf.build/grpc/go:v1.6.2
     out: gen/go
     opt: paths=source_relative
-  - remote: buf.build/connectrpc/go
+  - remote: buf.build/connectrpc/go:v1.20.0
     out: gen/go
     opt: paths=source_relative
-  - remote: buf.build/bufbuild/es
+  - remote: buf.build/bufbuild/es:v2.14.0
     out: gen/ts
-  - remote: buf.build/protocolbuffers/python
+  - remote: buf.build/protocolbuffers/python:v35.1
     out: gen/python
-  - remote: buf.build/grpc/python
+  - remote: buf.build/grpc/python:v1.83.0
     out: gen/python

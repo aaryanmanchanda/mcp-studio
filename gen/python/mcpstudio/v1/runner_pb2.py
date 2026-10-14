@@ -25,7 +25,7 @@ _sym_db = _symbol_database.Default()
 from mcpstudio.v1 import nodeio_pb2 as mcpstudio_dot_v1_dot_nodeio__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x19mcpstudio/v1/runner.proto\x12\x0cmcpstudio.v1\x1a\x19mcpstudio/v1/nodeio.proto\"\xe6\x02\n\x12\x45xecuteNodeRequest\x12\x17\n\x07node_id\x18\x01 \x01(\tR\x06nodeId\x12\x1f\n\x0bmanifest_id\x18\x02 \x01(\tR\nmanifestId\x12\x44\n\x06inputs\x18\x03 \x03(\x0b\x32,.mcpstudio.v1.ExecuteNodeRequest.InputsEntryR\x06inputs\x12\x44\n\x06\x63onfig\x18\x04 \x03(\x0b\x32,.mcpstudio.v1.ExecuteNodeRequest.ConfigEntryR\x06\x63onfig\x1aO\n\x0bInputsEntry\x12\x10\n\x03key\x18\x01 \x01(\tR\x03key\x12*\n\x05value\x18\x02 \x01(\x0b\x32\x14.mcpstudio.v1.NodeIOR\x05value:\x02\x38\x01\x1a\x39\n\x0b\x43onfigEntry\x12\x10\n\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n\x05value\x18\x02 \x01(\tR\x05value:\x02\x38\x01\"\xaf\x03\n\tNodeEvent\x12\x17\n\x07node_id\x18\x01 \x01(\tR\x06nodeId\x12\x36\n\x06status\x18\x02 \x01(\x0e\x32\x1e.mcpstudio.v1.NodeEvent.StatusR\x06status\x12!\n\x0cprogress_pct\x18\x03 \x01(\x05R\x0bprogressPct\x12\x14\n\x05\x65rror\x18\x04 \x01(\tR\x05\x65rror\x12>\n\x07outputs\x18\x05 \x03(\x0b\x32$.mcpstudio.v1.NodeEvent.OutputsEntryR\x07outputs\x1aP\n\x0cOutputsEntry\x12\x10\n\x03key\x18\x01 \x01(\tR\x03key\x12*\n\x05value\x18\x02 \x01(\x0b\x32\x14.mcpstudio.v1.NodeIOR\x05value:\x02\x38\x01\"\x85\x01\n\x06Status\x12\x16\n\x12STATUS_UNSPECIFIED\x10\x00\x12\x11\n\rSTATUS_QUEUED\x10\x01\x12\x12\n\x0eSTATUS_RUNNING\x10\x02\x12\x13\n\x0fSTATUS_PROGRESS\x10\x03\x12\x14\n\x10STATUS_SUCCEEDED\x10\x04\x12\x11\n\rSTATUS_FAILED\x10\x05\x32T\n\x06Runner\x12J\n\x0b\x45xecuteNode\x12 .mcpstudio.v1.ExecuteNodeRequest\x1a\x17.mcpstudio.v1.NodeEvent0\x01\x42\xb1\x01\n\x10\x63om.mcpstudio.v1B\x0bRunnerProtoP\x01Z?github.com/mcpstudio/mcp_studio/gen/go/mcpstudio/v1;mcpstudiov1\xa2\x02\x03MXX\xaa\x02\x0cMcpstudio.V1\xca\x02\x0cMcpstudio\\V1\xe2\x02\x18Mcpstudio\\V1\\GPBMetadata\xea\x02\rMcpstudio::V1b\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x19mcpstudio/v1/runner.proto\x12\x0cmcpstudio.v1\x1a\x19mcpstudio/v1/nodeio.proto\"\xfd\x02\n\x12\x45xecuteNodeRequest\x12\x17\n\x07node_id\x18\x01 \x01(\tR\x06nodeId\x12\x1f\n\x0bmanifest_id\x18\x02 \x01(\tR\nmanifestId\x12\x44\n\x06inputs\x18\x03 \x03(\x0b\x32,.mcpstudio.v1.ExecuteNodeRequest.InputsEntryR\x06inputs\x12\x44\n\x06\x63onfig\x18\x04 \x03(\x0b\x32,.mcpstudio.v1.ExecuteNodeRequest.ConfigEntryR\x06\x63onfig\x12\x15\n\x06run_id\x18\x05 \x01(\tR\x05runId\x1aO\n\x0bInputsEntry\x12\x10\n\x03key\x18\x01 \x01(\tR\x03key\x12*\n\x05value\x18\x02 \x01(\x0b\x32\x14.mcpstudio.v1.NodeIOR\x05value:\x02\x38\x01\x1a\x39\n\x0b\x43onfigEntry\x12\x10\n\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n\x05value\x18\x02 \x01(\tR\x05value:\x02\x38\x01\"\xc7\x03\n\tNodeEvent\x12\x17\n\x07node_id\x18\x01 \x01(\tR\x06nodeId\x12\x36\n\x06status\x18\x02 \x01(\x0e\x32\x1e.mcpstudio.v1.NodeEvent.StatusR\x06status\x12!\n\x0cprogress_pct\x18\x03 \x01(\x05R\x0bprogressPct\x12\x14\n\x05\x65rror\x18\x04 \x01(\tR\x05\x65rror\x12>\n\x07outputs\x18\x05 \x03(\x0b\x32$.mcpstudio.v1.NodeEvent.OutputsEntryR\x07outputs\x12\x16\n\x06\x64\x65tail\x18\x06 \x01(\tR\x06\x64\x65tail\x1aP\n\x0cOutputsEntry\x12\x10\n\x03key\x18\x01 \x01(\tR\x03key\x12*\n\x05value\x18\x02 \x01(\x0b\x32\x14.mcpstudio.v1.NodeIOR\x05value:\x02\x38\x01\"\x85\x01\n\x06Status\x12\x16\n\x12STATUS_UNSPECIFIED\x10\x00\x12\x11\n\rSTATUS_QUEUED\x10\x01\x12\x12\n\x0eSTATUS_RUNNING\x10\x02\x12\x13\n\x0fSTATUS_PROGRESS\x10\x03\x12\x14\n\x10STATUS_SUCCEEDED\x10\x04\x12\x11\n\rSTATUS_FAILED\x10\x05\x32T\n\x06Runner\x12J\n\x0b\x45xecuteNode\x12 .mcpstudio.v1.ExecuteNodeRequest\x1a\x17.mcpstudio.v1.NodeEvent0\x01\x42\xb1\x01\n\x10\x63om.mcpstudio.v1B\x0bRunnerProtoP\x01Z?github.com/mcpstudio/mcp_studio/gen/go/mcpstudio/v1;mcpstudiov1\xa2\x02\x03MXX\xaa\x02\x0cMcpstudio.V1\xca\x02\x0cMcpstudio\\V1\xe2\x02\x18Mcpstudio\\V1\\GPBMetadata\xea\x02\rMcpstudio::V1b\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -40,17 +40,17 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_NODEEVENT_OUTPUTSENTRY']._loaded_options = None
   _globals['_NODEEVENT_OUTPUTSENTRY']._serialized_options = b'8\001'
   _globals['_EXECUTENODEREQUEST']._serialized_start=71
-  _globals['_EXECUTENODEREQUEST']._serialized_end=429
-  _globals['_EXECUTENODEREQUEST_INPUTSENTRY']._serialized_start=291
-  _globals['_EXECUTENODEREQUEST_INPUTSENTRY']._serialized_end=370
-  _globals['_EXECUTENODEREQUEST_CONFIGENTRY']._serialized_start=372
-  _globals['_EXECUTENODEREQUEST_CONFIGENTRY']._serialized_end=429
-  _globals['_NODEEVENT']._serialized_start=432
-  _globals['_NODEEVENT']._serialized_end=863
-  _globals['_NODEEVENT_OUTPUTSENTRY']._serialized_start=647
-  _globals['_NODEEVENT_OUTPUTSENTRY']._serialized_end=727
-  _globals['_NODEEVENT_STATUS']._serialized_start=730
-  _globals['_NODEEVENT_STATUS']._serialized_end=863
-  _globals['_RUNNER']._serialized_start=865
-  _globals['_RUNNER']._serialized_end=949
+  _globals['_EXECUTENODEREQUEST']._serialized_end=452
+  _globals['_EXECUTENODEREQUEST_INPUTSENTRY']._serialized_start=314
+  _globals['_EXECUTENODEREQUEST_INPUTSENTRY']._serialized_end=393
+  _globals['_EXECUTENODEREQUEST_CONFIGENTRY']._serialized_start=395
+  _globals['_EXECUTENODEREQUEST_CONFIGENTRY']._serialized_end=452
+  _globals['_NODEEVENT']._serialized_start=455
+  _globals['_NODEEVENT']._serialized_end=910
+  _globals['_NODEEVENT_OUTPUTSENTRY']._serialized_start=694
+  _globals['_NODEEVENT_OUTPUTSENTRY']._serialized_end=774
+  _globals['_NODEEVENT_STATUS']._serialized_start=777
+  _globals['_NODEEVENT_STATUS']._serialized_end=910
+  _globals['_RUNNER']._serialized_start=912
+  _globals['_RUNNER']._serialized_end=996
 # @@protoc_insertion_point(module_scope)

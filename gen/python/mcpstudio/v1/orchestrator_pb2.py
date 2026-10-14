@@ -25,7 +25,7 @@ _sym_db = _symbol_database.Default()
 from mcpstudio.v1 import manifest_pb2 as mcpstudio_dot_v1_dot_manifest__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x1fmcpstudio/v1/orchestrator.proto\x12\x0cmcpstudio.v1\x1a\x1bmcpstudio/v1/manifest.proto\"9\n\x08Pipeline\x12\x0e\n\x02id\x18\x01 \x01(\tR\x02id\x12\x1d\n\ngraph_json\x18\x02 \x01(\tR\tgraphJson\";\n\x08RunEvent\x12\x17\n\x07node_id\x18\x01 \x01(\tR\x06nodeId\x12\x16\n\x06status\x18\x02 \x01(\tR\x06status\"\x1a\n\x18ListNodeManifestsRequest\"U\n\x19ListNodeManifestsResponse\x12\x38\n\tmanifests\x18\x01 \x03(\x0b\x32\x1a.mcpstudio.v1.NodeManifestR\tmanifests\"I\n\x13SavePipelineRequest\x12\x32\n\x08pipeline\x18\x01 \x01(\x0b\x32\x16.mcpstudio.v1.PipelineR\x08pipeline\"&\n\x14SavePipelineResponse\x12\x0e\n\x02id\x18\x01 \x01(\tR\x02id\"$\n\x12GetPipelineRequest\x12\x0e\n\x02id\x18\x01 \x01(\tR\x02id\"I\n\x13GetPipelineResponse\x12\x32\n\x08pipeline\x18\x01 \x01(\x0b\x32\x16.mcpstudio.v1.PipelineR\x08pipeline\"2\n\x0fStartRunRequest\x12\x1f\n\x0bpipeline_id\x18\x01 \x01(\tR\npipelineId\")\n\x10StartRunResponse\x12\x15\n\x06run_id\x18\x01 \x01(\tR\x05runId\"(\n\x0fWatchRunRequest\x12\x15\n\x06run_id\x18\x01 \x01(\tR\x05runId2\xaf\x03\n\x0cOrchestrator\x12\x64\n\x11ListNodeManifests\x12&.mcpstudio.v1.ListNodeManifestsRequest\x1a\'.mcpstudio.v1.ListNodeManifestsResponse\x12U\n\x0cSavePipeline\x12!.mcpstudio.v1.SavePipelineRequest\x1a\".mcpstudio.v1.SavePipelineResponse\x12R\n\x0bGetPipeline\x12 .mcpstudio.v1.GetPipelineRequest\x1a!.mcpstudio.v1.GetPipelineResponse\x12I\n\x08StartRun\x12\x1d.mcpstudio.v1.StartRunRequest\x1a\x1e.mcpstudio.v1.StartRunResponse\x12\x43\n\x08WatchRun\x12\x1d.mcpstudio.v1.WatchRunRequest\x1a\x16.mcpstudio.v1.RunEvent0\x01\x42\xb7\x01\n\x10\x63om.mcpstudio.v1B\x11OrchestratorProtoP\x01Z?github.com/mcpstudio/mcp_studio/gen/go/mcpstudio/v1;mcpstudiov1\xa2\x02\x03MXX\xaa\x02\x0cMcpstudio.V1\xca\x02\x0cMcpstudio\\V1\xe2\x02\x18Mcpstudio\\V1\\GPBMetadata\xea\x02\rMcpstudio::V1b\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x1fmcpstudio/v1/orchestrator.proto\x12\x0cmcpstudio.v1\x1a\x1bmcpstudio/v1/manifest.proto\"9\n\x08Pipeline\x12\x0e\n\x02id\x18\x01 \x01(\tR\x02id\x12\x1d\n\ngraph_json\x18\x02 \x01(\tR\tgraphJson\"S\n\x08RunEvent\x12\x17\n\x07node_id\x18\x01 \x01(\tR\x06nodeId\x12\x16\n\x06status\x18\x02 \x01(\tR\x06status\x12\x16\n\x06\x64\x65tail\x18\x03 \x01(\tR\x06\x64\x65tail\"W\n\x10SetSecretRequest\x12\x17\n\x07node_id\x18\x01 \x01(\tR\x06nodeId\x12\x14\n\x05\x66ield\x18\x02 \x01(\tR\x05\x66ield\x12\x14\n\x05value\x18\x03 \x01(\tR\x05value\"3\n\x11SetSecretResponse\x12\x1e\n\nconfigured\x18\x01 \x01(\x08R\nconfigured\"\x19\n\x17ListSecretStatusRequest\"=\n\x0cSecretStatus\x12\x17\n\x07node_id\x18\x01 \x01(\tR\x06nodeId\x12\x14\n\x05\x66ield\x18\x02 \x01(\tR\x05\x66ield\"V\n\x18ListSecretStatusResponse\x12:\n\nconfigured\x18\x01 \x03(\x0b\x32\x1a.mcpstudio.v1.SecretStatusR\nconfigured\"\x1a\n\x18ListNodeManifestsRequest\"U\n\x19ListNodeManifestsResponse\x12\x38\n\tmanifests\x18\x01 \x03(\x0b\x32\x1a.mcpstudio.v1.NodeManifestR\tmanifests\"I\n\x13SavePipelineRequest\x12\x32\n\x08pipeline\x18\x01 \x01(\x0b\x32\x16.mcpstudio.v1.PipelineR\x08pipeline\"&\n\x14SavePipelineResponse\x12\x0e\n\x02id\x18\x01 \x01(\tR\x02id\"$\n\x12GetPipelineRequest\x12\x0e\n\x02id\x18\x01 \x01(\tR\x02id\"I\n\x13GetPipelineResponse\x12\x32\n\x08pipeline\x18\x01 \x01(\x0b\x32\x16.mcpstudio.v1.PipelineR\x08pipeline\"2\n\x0fStartRunRequest\x12\x1f\n\x0bpipeline_id\x18\x01 \x01(\tR\npipelineId\")\n\x10StartRunResponse\x12\x15\n\x06run_id\x18\x01 \x01(\tR\x05runId\"(\n\x0fWatchRunRequest\x12\x15\n\x06run_id\x18\x01 \x01(\tR\x05runId2\xe0\x04\n\x0cOrchestrator\x12\x64\n\x11ListNodeManifests\x12&.mcpstudio.v1.ListNodeManifestsRequest\x1a\'.mcpstudio.v1.ListNodeManifestsResponse\x12U\n\x0cSavePipeline\x12!.mcpstudio.v1.SavePipelineRequest\x1a\".mcpstudio.v1.SavePipelineResponse\x12R\n\x0bGetPipeline\x12 .mcpstudio.v1.GetPipelineRequest\x1a!.mcpstudio.v1.GetPipelineResponse\x12I\n\x08StartRun\x12\x1d.mcpstudio.v1.StartRunRequest\x1a\x1e.mcpstudio.v1.StartRunResponse\x12\x43\n\x08WatchRun\x12\x1d.mcpstudio.v1.WatchRunRequest\x1a\x16.mcpstudio.v1.RunEvent0\x01\x12L\n\tSetSecret\x12\x1e.mcpstudio.v1.SetSecretRequest\x1a\x1f.mcpstudio.v1.SetSecretResponse\x12\x61\n\x10ListSecretStatus\x12%.mcpstudio.v1.ListSecretStatusRequest\x1a&.mcpstudio.v1.ListSecretStatusResponseB\xb7\x01\n\x10\x63om.mcpstudio.v1B\x11OrchestratorProtoP\x01Z?github.com/mcpstudio/mcp_studio/gen/go/mcpstudio/v1;mcpstudiov1\xa2\x02\x03MXX\xaa\x02\x0cMcpstudio.V1\xca\x02\x0cMcpstudio\\V1\xe2\x02\x18Mcpstudio\\V1\\GPBMetadata\xea\x02\rMcpstudio::V1b\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -36,25 +36,35 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_PIPELINE']._serialized_start=78
   _globals['_PIPELINE']._serialized_end=135
   _globals['_RUNEVENT']._serialized_start=137
-  _globals['_RUNEVENT']._serialized_end=196
-  _globals['_LISTNODEMANIFESTSREQUEST']._serialized_start=198
-  _globals['_LISTNODEMANIFESTSREQUEST']._serialized_end=224
-  _globals['_LISTNODEMANIFESTSRESPONSE']._serialized_start=226
-  _globals['_LISTNODEMANIFESTSRESPONSE']._serialized_end=311
-  _globals['_SAVEPIPELINEREQUEST']._serialized_start=313
-  _globals['_SAVEPIPELINEREQUEST']._serialized_end=386
-  _globals['_SAVEPIPELINERESPONSE']._serialized_start=388
-  _globals['_SAVEPIPELINERESPONSE']._serialized_end=426
-  _globals['_GETPIPELINEREQUEST']._serialized_start=428
-  _globals['_GETPIPELINEREQUEST']._serialized_end=464
-  _globals['_GETPIPELINERESPONSE']._serialized_start=466
-  _globals['_GETPIPELINERESPONSE']._serialized_end=539
-  _globals['_STARTRUNREQUEST']._serialized_start=541
-  _globals['_STARTRUNREQUEST']._serialized_end=591
-  _globals['_STARTRUNRESPONSE']._serialized_start=593
-  _globals['_STARTRUNRESPONSE']._serialized_end=634
-  _globals['_WATCHRUNREQUEST']._serialized_start=636
-  _globals['_WATCHRUNREQUEST']._serialized_end=676
-  _globals['_ORCHESTRATOR']._serialized_start=679
-  _globals['_ORCHESTRATOR']._serialized_end=1110
+  _globals['_RUNEVENT']._serialized_end=220
+  _globals['_SETSECRETREQUEST']._serialized_start=222
+  _globals['_SETSECRETREQUEST']._serialized_end=309
+  _globals['_SETSECRETRESPONSE']._serialized_start=311
+  _globals['_SETSECRETRESPONSE']._serialized_end=362
+  _globals['_LISTSECRETSTATUSREQUEST']._serialized_start=364
+  _globals['_LISTSECRETSTATUSREQUEST']._serialized_end=389
+  _globals['_SECRETSTATUS']._serialized_start=391
+  _globals['_SECRETSTATUS']._serialized_end=452
+  _globals['_LISTSECRETSTATUSRESPONSE']._serialized_start=454
+  _globals['_LISTSECRETSTATUSRESPONSE']._serialized_end=540
+  _globals['_LISTNODEMANIFESTSREQUEST']._serialized_start=542
+  _globals['_LISTNODEMANIFESTSREQUEST']._serialized_end=568
+  _globals['_LISTNODEMANIFESTSRESPONSE']._serialized_start=570
+  _globals['_LISTNODEMANIFESTSRESPONSE']._serialized_end=655
+  _globals['_SAVEPIPELINEREQUEST']._serialized_start=657
+  _globals['_SAVEPIPELINEREQUEST']._serialized_end=730
+  _globals['_SAVEPIPELINERESPONSE']._serialized_start=732
+  _globals['_SAVEPIPELINERESPONSE']._serialized_end=770
+  _globals['_GETPIPELINEREQUEST']._serialized_start=772
+  _globals['_GETPIPELINEREQUEST']._serialized_end=808
+  _globals['_GETPIPELINERESPONSE']._serialized_start=810
+  _globals['_GETPIPELINERESPONSE']._serialized_end=883
+  _globals['_STARTRUNREQUEST']._serialized_start=885
+  _globals['_STARTRUNREQUEST']._serialized_end=935
+  _globals['_STARTRUNRESPONSE']._serialized_start=937
+  _globals['_STARTRUNRESPONSE']._serialized_end=978
+  _globals['_WATCHRUNREQUEST']._serialized_start=980
+  _globals['_WATCHRUNREQUEST']._serialized_end=1020
+  _globals['_ORCHESTRATOR']._serialized_start=1023
+  _globals['_ORCHESTRATOR']._serialized_end=1631
 # @@protoc_insertion_point(module_scope)

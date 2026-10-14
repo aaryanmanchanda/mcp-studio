@@ -12,9 +12,34 @@ message Pipeline {
 }
 
 // One status update for a single node within a running pipeline.
+// node_id "" means the event is about the run itself (its final verdict).
 message RunEvent {
   string node_id = 1;
-  string status = 2;
+  string status = 2; // queued | running | succeeded | failed
+  string detail = 3; // short human text: an output preview or an error
+}
+
+// A credential is sent exactly once, here, and is never returned by any RPC.
+message SetSecretRequest {
+  string node_id = 1;
+  string field = 2;
+  string value = 3;
+}
+
+message SetSecretResponse {
+  bool configured = 1;
+}
+
+message ListSecretStatusRequest {}
+
+// Which (node, field) pairs have a stored credential. Never the credential.
+message SecretStatus {
+  string node_id = 1;
+  string field = 2;
+}
+
+message ListSecretStatusResponse {
+  repeated SecretStatus configured = 1;
 }
 
 message ListNodeManifestsRequest {}
@@ -59,4 +84,6 @@ service Orchestrator {
   rpc GetPipeline(GetPipelineRequest) returns (GetPipelineResponse);
   rpc StartRun(StartRunRequest) returns (StartRunResponse);
   rpc WatchRun(WatchRunRequest) returns (stream RunEvent);
+  rpc SetSecret(SetSecretRequest) returns (SetSecretResponse);
+  rpc ListSecretStatus(ListSecretStatusRequest) returns (ListSecretStatusResponse);
 }

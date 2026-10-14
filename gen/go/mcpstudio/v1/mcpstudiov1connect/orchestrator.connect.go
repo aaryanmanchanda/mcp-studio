@@ -46,6 +46,11 @@ const (
 	OrchestratorStartRunProcedure = "/mcpstudio.v1.Orchestrator/StartRun"
 	// OrchestratorWatchRunProcedure is the fully-qualified name of the Orchestrator's WatchRun RPC.
 	OrchestratorWatchRunProcedure = "/mcpstudio.v1.Orchestrator/WatchRun"
+	// OrchestratorSetSecretProcedure is the fully-qualified name of the Orchestrator's SetSecret RPC.
+	OrchestratorSetSecretProcedure = "/mcpstudio.v1.Orchestrator/SetSecret"
+	// OrchestratorListSecretStatusProcedure is the fully-qualified name of the Orchestrator's
+	// ListSecretStatus RPC.
+	OrchestratorListSecretStatusProcedure = "/mcpstudio.v1.Orchestrator/ListSecretStatus"
 )
 
 // OrchestratorClient is a client for the mcpstudio.v1.Orchestrator service.
@@ -55,6 +60,8 @@ type OrchestratorClient interface {
 	GetPipeline(context.Context, *connect.Request[v1.GetPipelineRequest]) (*connect.Response[v1.GetPipelineResponse], error)
 	StartRun(context.Context, *connect.Request[v1.StartRunRequest]) (*connect.Response[v1.StartRunResponse], error)
 	WatchRun(context.Context, *connect.Request[v1.WatchRunRequest]) (*connect.ServerStreamForClient[v1.RunEvent], error)
+	SetSecret(context.Context, *connect.Request[v1.SetSecretRequest]) (*connect.Response[v1.SetSecretResponse], error)
+	ListSecretStatus(context.Context, *connect.Request[v1.ListSecretStatusRequest]) (*connect.Response[v1.ListSecretStatusResponse], error)
 }
 
 // NewOrchestratorClient constructs a client for the mcpstudio.v1.Orchestrator service. By default,
@@ -98,6 +105,18 @@ func NewOrchestratorClient(httpClient connect.HTTPClient, baseURL string, opts .
 			connect.WithSchema(orchestratorMethods.ByName("WatchRun")),
 			connect.WithClientOptions(opts...),
 		),
+		setSecret: connect.NewClient[v1.SetSecretRequest, v1.SetSecretResponse](
+			httpClient,
+			baseURL+OrchestratorSetSecretProcedure,
+			connect.WithSchema(orchestratorMethods.ByName("SetSecret")),
+			connect.WithClientOptions(opts...),
+		),
+		listSecretStatus: connect.NewClient[v1.ListSecretStatusRequest, v1.ListSecretStatusResponse](
+			httpClient,
+			baseURL+OrchestratorListSecretStatusProcedure,
+			connect.WithSchema(orchestratorMethods.ByName("ListSecretStatus")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -108,6 +127,8 @@ type orchestratorClient struct {
 	getPipeline       *connect.Client[v1.GetPipelineRequest, v1.GetPipelineResponse]
 	startRun          *connect.Client[v1.StartRunRequest, v1.StartRunResponse]
 	watchRun          *connect.Client[v1.WatchRunRequest, v1.RunEvent]
+	setSecret         *connect.Client[v1.SetSecretRequest, v1.SetSecretResponse]
+	listSecretStatus  *connect.Client[v1.ListSecretStatusRequest, v1.ListSecretStatusResponse]
 }
 
 // ListNodeManifests calls mcpstudio.v1.Orchestrator.ListNodeManifests.
@@ -135,6 +156,16 @@ func (c *orchestratorClient) WatchRun(ctx context.Context, req *connect.Request[
 	return c.watchRun.CallServerStream(ctx, req)
 }
 
+// SetSecret calls mcpstudio.v1.Orchestrator.SetSecret.
+func (c *orchestratorClient) SetSecret(ctx context.Context, req *connect.Request[v1.SetSecretRequest]) (*connect.Response[v1.SetSecretResponse], error) {
+	return c.setSecret.CallUnary(ctx, req)
+}
+
+// ListSecretStatus calls mcpstudio.v1.Orchestrator.ListSecretStatus.
+func (c *orchestratorClient) ListSecretStatus(ctx context.Context, req *connect.Request[v1.ListSecretStatusRequest]) (*connect.Response[v1.ListSecretStatusResponse], error) {
+	return c.listSecretStatus.CallUnary(ctx, req)
+}
+
 // OrchestratorHandler is an implementation of the mcpstudio.v1.Orchestrator service.
 type OrchestratorHandler interface {
 	ListNodeManifests(context.Context, *connect.Request[v1.ListNodeManifestsRequest]) (*connect.Response[v1.ListNodeManifestsResponse], error)
@@ -142,6 +173,8 @@ type OrchestratorHandler interface {
 	GetPipeline(context.Context, *connect.Request[v1.GetPipelineRequest]) (*connect.Response[v1.GetPipelineResponse], error)
 	StartRun(context.Context, *connect.Request[v1.StartRunRequest]) (*connect.Response[v1.StartRunResponse], error)
 	WatchRun(context.Context, *connect.Request[v1.WatchRunRequest], *connect.ServerStream[v1.RunEvent]) error
+	SetSecret(context.Context, *connect.Request[v1.SetSecretRequest]) (*connect.Response[v1.SetSecretResponse], error)
+	ListSecretStatus(context.Context, *connect.Request[v1.ListSecretStatusRequest]) (*connect.Response[v1.ListSecretStatusResponse], error)
 }
 
 // NewOrchestratorHandler builds an HTTP handler from the service implementation. It returns the
@@ -181,6 +214,18 @@ func NewOrchestratorHandler(svc OrchestratorHandler, opts ...connect.HandlerOpti
 		connect.WithSchema(orchestratorMethods.ByName("WatchRun")),
 		connect.WithHandlerOptions(opts...),
 	)
+	orchestratorSetSecretHandler := connect.NewUnaryHandler(
+		OrchestratorSetSecretProcedure,
+		svc.SetSecret,
+		connect.WithSchema(orchestratorMethods.ByName("SetSecret")),
+		connect.WithHandlerOptions(opts...),
+	)
+	orchestratorListSecretStatusHandler := connect.NewUnaryHandler(
+		OrchestratorListSecretStatusProcedure,
+		svc.ListSecretStatus,
+		connect.WithSchema(orchestratorMethods.ByName("ListSecretStatus")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/mcpstudio.v1.Orchestrator/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case OrchestratorListNodeManifestsProcedure:
@@ -193,6 +238,10 @@ func NewOrchestratorHandler(svc OrchestratorHandler, opts ...connect.HandlerOpti
 			orchestratorStartRunHandler.ServeHTTP(w, r)
 		case OrchestratorWatchRunProcedure:
 			orchestratorWatchRunHandler.ServeHTTP(w, r)
+		case OrchestratorSetSecretProcedure:
+			orchestratorSetSecretHandler.ServeHTTP(w, r)
+		case OrchestratorListSecretStatusProcedure:
+			orchestratorListSecretStatusHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -220,4 +269,12 @@ func (UnimplementedOrchestratorHandler) StartRun(context.Context, *connect.Reque
 
 func (UnimplementedOrchestratorHandler) WatchRun(context.Context, *connect.Request[v1.WatchRunRequest], *connect.ServerStream[v1.RunEvent]) error {
 	return connect.NewError(connect.CodeUnimplemented, errors.New("mcpstudio.v1.Orchestrator.WatchRun is not implemented"))
+}
+
+func (UnimplementedOrchestratorHandler) SetSecret(context.Context, *connect.Request[v1.SetSecretRequest]) (*connect.Response[v1.SetSecretResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("mcpstudio.v1.Orchestrator.SetSecret is not implemented"))
+}
+
+func (UnimplementedOrchestratorHandler) ListSecretStatus(context.Context, *connect.Request[v1.ListSecretStatusRequest]) (*connect.Response[v1.ListSecretStatusResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("mcpstudio.v1.Orchestrator.ListSecretStatus is not implemented"))
 }

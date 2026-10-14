@@ -36,6 +36,13 @@ export declare type ExecuteNodeRequest = Message<"mcpstudio.v1.ExecuteNodeReques
    * @generated from field: map<string, string> config = 4;
    */
   config: { [key: string]: string };
+
+  /**
+   * lets a runner group its artifacts per run
+   *
+   * @generated from field: string run_id = 5;
+   */
+  runId: string;
 };
 
 /**
@@ -74,6 +81,13 @@ export declare type NodeEvent = Message<"mcpstudio.v1.NodeEvent"> & {
    * @generated from field: map<string, mcpstudio.v1.NodeIO> outputs = 5;
    */
   outputs: { [key: string]: NodeIO };
+
+  /**
+   * short human-readable preview of the output, shown in the UI
+   *
+   * @generated from field: string detail = 6;
+   */
+  detail: string;
 };
 
 /**

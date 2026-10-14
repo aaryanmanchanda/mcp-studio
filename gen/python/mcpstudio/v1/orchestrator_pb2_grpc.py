@@ -41,6 +41,16 @@ class OrchestratorStub:
                 request_serializer=mcpstudio_dot_v1_dot_orchestrator__pb2.WatchRunRequest.SerializeToString,
                 response_deserializer=mcpstudio_dot_v1_dot_orchestrator__pb2.RunEvent.FromString,
                 _registered_method=True)
+        self.SetSecret = channel.unary_unary(
+                '/mcpstudio.v1.Orchestrator/SetSecret',
+                request_serializer=mcpstudio_dot_v1_dot_orchestrator__pb2.SetSecretRequest.SerializeToString,
+                response_deserializer=mcpstudio_dot_v1_dot_orchestrator__pb2.SetSecretResponse.FromString,
+                _registered_method=True)
+        self.ListSecretStatus = channel.unary_unary(
+                '/mcpstudio.v1.Orchestrator/ListSecretStatus',
+                request_serializer=mcpstudio_dot_v1_dot_orchestrator__pb2.ListSecretStatusRequest.SerializeToString,
+                response_deserializer=mcpstudio_dot_v1_dot_orchestrator__pb2.ListSecretStatusResponse.FromString,
+                _registered_method=True)
 
 
 class OrchestratorServicer:
@@ -78,6 +88,18 @@ class OrchestratorServicer:
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def SetSecret(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def ListSecretStatus(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_OrchestratorServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -105,6 +127,16 @@ def add_OrchestratorServicer_to_server(servicer, server):
                     servicer.WatchRun,
                     request_deserializer=mcpstudio_dot_v1_dot_orchestrator__pb2.WatchRunRequest.FromString,
                     response_serializer=mcpstudio_dot_v1_dot_orchestrator__pb2.RunEvent.SerializeToString,
+            ),
+            'SetSecret': grpc.unary_unary_rpc_method_handler(
+                    servicer.SetSecret,
+                    request_deserializer=mcpstudio_dot_v1_dot_orchestrator__pb2.SetSecretRequest.FromString,
+                    response_serializer=mcpstudio_dot_v1_dot_orchestrator__pb2.SetSecretResponse.SerializeToString,
+            ),
+            'ListSecretStatus': grpc.unary_unary_rpc_method_handler(
+                    servicer.ListSecretStatus,
+                    request_deserializer=mcpstudio_dot_v1_dot_orchestrator__pb2.ListSecretStatusRequest.FromString,
+                    response_serializer=mcpstudio_dot_v1_dot_orchestrator__pb2.ListSecretStatusResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -244,6 +276,60 @@ class Orchestrator:
             '/mcpstudio.v1.Orchestrator/WatchRun',
             mcpstudio_dot_v1_dot_orchestrator__pb2.WatchRunRequest.SerializeToString,
             mcpstudio_dot_v1_dot_orchestrator__pb2.RunEvent.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def SetSecret(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/mcpstudio.v1.Orchestrator/SetSecret',
+            mcpstudio_dot_v1_dot_orchestrator__pb2.SetSecretRequest.SerializeToString,
+            mcpstudio_dot_v1_dot_orchestrator__pb2.SetSecretResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def ListSecretStatus(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/mcpstudio.v1.Orchestrator/ListSecretStatus',
+            mcpstudio_dot_v1_dot_orchestrator__pb2.ListSecretStatusRequest.SerializeToString,
+            mcpstudio_dot_v1_dot_orchestrator__pb2.ListSecretStatusResponse.FromString,
             options,
             channel_credentials,
             insecure,

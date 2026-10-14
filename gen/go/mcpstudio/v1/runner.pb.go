@@ -86,6 +86,7 @@ type ExecuteNodeRequest struct {
 	ManifestId    string                 `protobuf:"bytes,2,opt,name=manifest_id,json=manifestId,proto3" json:"manifest_id,omitempty"`
 	Inputs        map[string]*NodeIO     `protobuf:"bytes,3,rep,name=inputs,proto3" json:"inputs,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	Config        map[string]string      `protobuf:"bytes,4,rep,name=config,proto3" json:"config,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	RunId         string                 `protobuf:"bytes,5,opt,name=run_id,json=runId,proto3" json:"run_id,omitempty"` // lets a runner group its artifacts per run
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -148,6 +149,13 @@ func (x *ExecuteNodeRequest) GetConfig() map[string]string {
 	return nil
 }
 
+func (x *ExecuteNodeRequest) GetRunId() string {
+	if x != nil {
+		return x.RunId
+	}
+	return ""
+}
+
 // One status update a runner streams back for a node it's executing.
 type NodeEvent struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -156,6 +164,7 @@ type NodeEvent struct {
 	ProgressPct   int32                  `protobuf:"varint,3,opt,name=progress_pct,json=progressPct,proto3" json:"progress_pct,omitempty"`
 	Error         string                 `protobuf:"bytes,4,opt,name=error,proto3" json:"error,omitempty"`
 	Outputs       map[string]*NodeIO     `protobuf:"bytes,5,rep,name=outputs,proto3" json:"outputs,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	Detail        string                 `protobuf:"bytes,6,opt,name=detail,proto3" json:"detail,omitempty"` // short human-readable preview of the output, shown in the UI
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -225,29 +234,38 @@ func (x *NodeEvent) GetOutputs() map[string]*NodeIO {
 	return nil
 }
 
+func (x *NodeEvent) GetDetail() string {
+	if x != nil {
+		return x.Detail
+	}
+	return ""
+}
+
 var File_mcpstudio_v1_runner_proto protoreflect.FileDescriptor
 
 const file_mcpstudio_v1_runner_proto_rawDesc = "" +
 	"\n" +
-	"\x19mcpstudio/v1/runner.proto\x12\fmcpstudio.v1\x1a\x19mcpstudio/v1/nodeio.proto\"\xe6\x02\n" +
+	"\x19mcpstudio/v1/runner.proto\x12\fmcpstudio.v1\x1a\x19mcpstudio/v1/nodeio.proto\"\xfd\x02\n" +
 	"\x12ExecuteNodeRequest\x12\x17\n" +
 	"\anode_id\x18\x01 \x01(\tR\x06nodeId\x12\x1f\n" +
 	"\vmanifest_id\x18\x02 \x01(\tR\n" +
 	"manifestId\x12D\n" +
 	"\x06inputs\x18\x03 \x03(\v2,.mcpstudio.v1.ExecuteNodeRequest.InputsEntryR\x06inputs\x12D\n" +
-	"\x06config\x18\x04 \x03(\v2,.mcpstudio.v1.ExecuteNodeRequest.ConfigEntryR\x06config\x1aO\n" +
+	"\x06config\x18\x04 \x03(\v2,.mcpstudio.v1.ExecuteNodeRequest.ConfigEntryR\x06config\x12\x15\n" +
+	"\x06run_id\x18\x05 \x01(\tR\x05runId\x1aO\n" +
 	"\vInputsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12*\n" +
 	"\x05value\x18\x02 \x01(\v2\x14.mcpstudio.v1.NodeIOR\x05value:\x028\x01\x1a9\n" +
 	"\vConfigEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xaf\x03\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xc7\x03\n" +
 	"\tNodeEvent\x12\x17\n" +
 	"\anode_id\x18\x01 \x01(\tR\x06nodeId\x126\n" +
 	"\x06status\x18\x02 \x01(\x0e2\x1e.mcpstudio.v1.NodeEvent.StatusR\x06status\x12!\n" +
 	"\fprogress_pct\x18\x03 \x01(\x05R\vprogressPct\x12\x14\n" +
 	"\x05error\x18\x04 \x01(\tR\x05error\x12>\n" +
-	"\aoutputs\x18\x05 \x03(\v2$.mcpstudio.v1.NodeEvent.OutputsEntryR\aoutputs\x1aP\n" +
+	"\aoutputs\x18\x05 \x03(\v2$.mcpstudio.v1.NodeEvent.OutputsEntryR\aoutputs\x12\x16\n" +
+	"\x06detail\x18\x06 \x01(\tR\x06detail\x1aP\n" +
 	"\fOutputsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12*\n" +
 	"\x05value\x18\x02 \x01(\v2\x14.mcpstudio.v1.NodeIOR\x05value:\x028\x01\"\x85\x01\n" +

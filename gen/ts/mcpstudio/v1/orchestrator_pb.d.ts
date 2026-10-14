@@ -37,6 +37,7 @@ export declare const PipelineSchema: GenMessage<Pipeline>;
 
 /**
  * One status update for a single node within a running pipeline.
+ * node_id "" means the event is about the run itself (its final verdict).
  *
  * @generated from message mcpstudio.v1.RunEvent
  */
@@ -47,9 +48,18 @@ export declare type RunEvent = Message<"mcpstudio.v1.RunEvent"> & {
   nodeId: string;
 
   /**
+   * queued | running | succeeded | failed
+   *
    * @generated from field: string status = 2;
    */
   status: string;
+
+  /**
+   * short human text: an output preview or an error
+   *
+   * @generated from field: string detail = 3;
+   */
+  detail: string;
 };
 
 /**
@@ -57,6 +67,101 @@ export declare type RunEvent = Message<"mcpstudio.v1.RunEvent"> & {
  * Use `create(RunEventSchema)` to create a new message.
  */
 export declare const RunEventSchema: GenMessage<RunEvent>;
+
+/**
+ * A credential is sent exactly once, here, and is never returned by any RPC.
+ *
+ * @generated from message mcpstudio.v1.SetSecretRequest
+ */
+export declare type SetSecretRequest = Message<"mcpstudio.v1.SetSecretRequest"> & {
+  /**
+   * @generated from field: string node_id = 1;
+   */
+  nodeId: string;
+
+  /**
+   * @generated from field: string field = 2;
+   */
+  field: string;
+
+  /**
+   * @generated from field: string value = 3;
+   */
+  value: string;
+};
+
+/**
+ * Describes the message mcpstudio.v1.SetSecretRequest.
+ * Use `create(SetSecretRequestSchema)` to create a new message.
+ */
+export declare const SetSecretRequestSchema: GenMessage<SetSecretRequest>;
+
+/**
+ * @generated from message mcpstudio.v1.SetSecretResponse
+ */
+export declare type SetSecretResponse = Message<"mcpstudio.v1.SetSecretResponse"> & {
+  /**
+   * @generated from field: bool configured = 1;
+   */
+  configured: boolean;
+};
+
+/**
+ * Describes the message mcpstudio.v1.SetSecretResponse.
+ * Use `create(SetSecretResponseSchema)` to create a new message.
+ */
+export declare const SetSecretResponseSchema: GenMessage<SetSecretResponse>;
+
+/**
+ * @generated from message mcpstudio.v1.ListSecretStatusRequest
+ */
+export declare type ListSecretStatusRequest = Message<"mcpstudio.v1.ListSecretStatusRequest"> & {
+};
+
+/**
+ * Describes the message mcpstudio.v1.ListSecretStatusRequest.
+ * Use `create(ListSecretStatusRequestSchema)` to create a new message.
+ */
+export declare const ListSecretStatusRequestSchema: GenMessage<ListSecretStatusRequest>;
+
+/**
+ * Which (node, field) pairs have a stored credential. Never the credential.
+ *
+ * @generated from message mcpstudio.v1.SecretStatus
+ */
+export declare type SecretStatus = Message<"mcpstudio.v1.SecretStatus"> & {
+  /**
+   * @generated from field: string node_id = 1;
+   */
+  nodeId: string;
+
+  /**
+   * @generated from field: string field = 2;
+   */
+  field: string;
+};
+
+/**
+ * Describes the message mcpstudio.v1.SecretStatus.
+ * Use `create(SecretStatusSchema)` to create a new message.
+ */
+export declare const SecretStatusSchema: GenMessage<SecretStatus>;
+
+/**
+ * @generated from message mcpstudio.v1.ListSecretStatusResponse
+ */
+export declare type ListSecretStatusResponse = Message<"mcpstudio.v1.ListSecretStatusResponse"> & {
+  /**
+   * @generated from field: repeated mcpstudio.v1.SecretStatus configured = 1;
+   */
+  configured: SecretStatus[];
+};
+
+/**
+ * Describes the message mcpstudio.v1.ListSecretStatusResponse.
+ * Use `create(ListSecretStatusResponseSchema)` to create a new message.
+ */
+export declare const ListSecretStatusResponseSchema: GenMessage<ListSecretStatusResponse>;
 
 /**
  * @generated from message mcpstudio.v1.ListNodeManifestsRequest
@@ -244,6 +349,22 @@ export declare const Orchestrator: GenService<{
     methodKind: "server_streaming";
     input: typeof WatchRunRequestSchema;
     output: typeof RunEventSchema;
+  },
+  /**
+   * @generated from rpc mcpstudio.v1.Orchestrator.SetSecret
+   */
+  setSecret: {
+    methodKind: "unary";
+    input: typeof SetSecretRequestSchema;
+    output: typeof SetSecretResponseSchema;
+  },
+  /**
+   * @generated from rpc mcpstudio.v1.Orchestrator.ListSecretStatus
+   */
+  listSecretStatus: {
+    methodKind: "unary";
+    input: typeof ListSecretStatusRequestSchema;
+    output: typeof ListSecretStatusResponseSchema;
   },
 }>;
 

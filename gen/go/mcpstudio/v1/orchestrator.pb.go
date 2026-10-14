@@ -76,10 +76,12 @@ func (x *Pipeline) GetGraphJson() string {
 }
 
 // One status update for a single node within a running pipeline.
+// node_id "" means the event is about the run itself (its final verdict).
 type RunEvent struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	NodeId        string                 `protobuf:"bytes,1,opt,name=node_id,json=nodeId,proto3" json:"node_id,omitempty"`
-	Status        string                 `protobuf:"bytes,2,opt,name=status,proto3" json:"status,omitempty"`
+	Status        string                 `protobuf:"bytes,2,opt,name=status,proto3" json:"status,omitempty"` // queued | running | succeeded | failed
+	Detail        string                 `protobuf:"bytes,3,opt,name=detail,proto3" json:"detail,omitempty"` // short human text: an output preview or an error
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -128,6 +130,251 @@ func (x *RunEvent) GetStatus() string {
 	return ""
 }
 
+func (x *RunEvent) GetDetail() string {
+	if x != nil {
+		return x.Detail
+	}
+	return ""
+}
+
+// A credential is sent exactly once, here, and is never returned by any RPC.
+type SetSecretRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	NodeId        string                 `protobuf:"bytes,1,opt,name=node_id,json=nodeId,proto3" json:"node_id,omitempty"`
+	Field         string                 `protobuf:"bytes,2,opt,name=field,proto3" json:"field,omitempty"`
+	Value         string                 `protobuf:"bytes,3,opt,name=value,proto3" json:"value,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SetSecretRequest) Reset() {
+	*x = SetSecretRequest{}
+	mi := &file_mcpstudio_v1_orchestrator_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SetSecretRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SetSecretRequest) ProtoMessage() {}
+
+func (x *SetSecretRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_mcpstudio_v1_orchestrator_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SetSecretRequest.ProtoReflect.Descriptor instead.
+func (*SetSecretRequest) Descriptor() ([]byte, []int) {
+	return file_mcpstudio_v1_orchestrator_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *SetSecretRequest) GetNodeId() string {
+	if x != nil {
+		return x.NodeId
+	}
+	return ""
+}
+
+func (x *SetSecretRequest) GetField() string {
+	if x != nil {
+		return x.Field
+	}
+	return ""
+}
+
+func (x *SetSecretRequest) GetValue() string {
+	if x != nil {
+		return x.Value
+	}
+	return ""
+}
+
+type SetSecretResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Configured    bool                   `protobuf:"varint,1,opt,name=configured,proto3" json:"configured,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SetSecretResponse) Reset() {
+	*x = SetSecretResponse{}
+	mi := &file_mcpstudio_v1_orchestrator_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SetSecretResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SetSecretResponse) ProtoMessage() {}
+
+func (x *SetSecretResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_mcpstudio_v1_orchestrator_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SetSecretResponse.ProtoReflect.Descriptor instead.
+func (*SetSecretResponse) Descriptor() ([]byte, []int) {
+	return file_mcpstudio_v1_orchestrator_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *SetSecretResponse) GetConfigured() bool {
+	if x != nil {
+		return x.Configured
+	}
+	return false
+}
+
+type ListSecretStatusRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListSecretStatusRequest) Reset() {
+	*x = ListSecretStatusRequest{}
+	mi := &file_mcpstudio_v1_orchestrator_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListSecretStatusRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListSecretStatusRequest) ProtoMessage() {}
+
+func (x *ListSecretStatusRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_mcpstudio_v1_orchestrator_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListSecretStatusRequest.ProtoReflect.Descriptor instead.
+func (*ListSecretStatusRequest) Descriptor() ([]byte, []int) {
+	return file_mcpstudio_v1_orchestrator_proto_rawDescGZIP(), []int{4}
+}
+
+// Which (node, field) pairs have a stored credential. Never the credential.
+type SecretStatus struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	NodeId        string                 `protobuf:"bytes,1,opt,name=node_id,json=nodeId,proto3" json:"node_id,omitempty"`
+	Field         string                 `protobuf:"bytes,2,opt,name=field,proto3" json:"field,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SecretStatus) Reset() {
+	*x = SecretStatus{}
+	mi := &file_mcpstudio_v1_orchestrator_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SecretStatus) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SecretStatus) ProtoMessage() {}
+
+func (x *SecretStatus) ProtoReflect() protoreflect.Message {
+	mi := &file_mcpstudio_v1_orchestrator_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SecretStatus.ProtoReflect.Descriptor instead.
+func (*SecretStatus) Descriptor() ([]byte, []int) {
+	return file_mcpstudio_v1_orchestrator_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *SecretStatus) GetNodeId() string {
+	if x != nil {
+		return x.NodeId
+	}
+	return ""
+}
+
+func (x *SecretStatus) GetField() string {
+	if x != nil {
+		return x.Field
+	}
+	return ""
+}
+
+type ListSecretStatusResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Configured    []*SecretStatus        `protobuf:"bytes,1,rep,name=configured,proto3" json:"configured,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListSecretStatusResponse) Reset() {
+	*x = ListSecretStatusResponse{}
+	mi := &file_mcpstudio_v1_orchestrator_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListSecretStatusResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListSecretStatusResponse) ProtoMessage() {}
+
+func (x *ListSecretStatusResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_mcpstudio_v1_orchestrator_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListSecretStatusResponse.ProtoReflect.Descriptor instead.
+func (*ListSecretStatusResponse) Descriptor() ([]byte, []int) {
+	return file_mcpstudio_v1_orchestrator_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *ListSecretStatusResponse) GetConfigured() []*SecretStatus {
+	if x != nil {
+		return x.Configured
+	}
+	return nil
+}
+
 type ListNodeManifestsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -136,7 +383,7 @@ type ListNodeManifestsRequest struct {
 
 func (x *ListNodeManifestsRequest) Reset() {
 	*x = ListNodeManifestsRequest{}
-	mi := &file_mcpstudio_v1_orchestrator_proto_msgTypes[2]
+	mi := &file_mcpstudio_v1_orchestrator_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -148,7 +395,7 @@ func (x *ListNodeManifestsRequest) String() string {
 func (*ListNodeManifestsRequest) ProtoMessage() {}
 
 func (x *ListNodeManifestsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_mcpstudio_v1_orchestrator_proto_msgTypes[2]
+	mi := &file_mcpstudio_v1_orchestrator_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -161,7 +408,7 @@ func (x *ListNodeManifestsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListNodeManifestsRequest.ProtoReflect.Descriptor instead.
 func (*ListNodeManifestsRequest) Descriptor() ([]byte, []int) {
-	return file_mcpstudio_v1_orchestrator_proto_rawDescGZIP(), []int{2}
+	return file_mcpstudio_v1_orchestrator_proto_rawDescGZIP(), []int{7}
 }
 
 type ListNodeManifestsResponse struct {
@@ -173,7 +420,7 @@ type ListNodeManifestsResponse struct {
 
 func (x *ListNodeManifestsResponse) Reset() {
 	*x = ListNodeManifestsResponse{}
-	mi := &file_mcpstudio_v1_orchestrator_proto_msgTypes[3]
+	mi := &file_mcpstudio_v1_orchestrator_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -185,7 +432,7 @@ func (x *ListNodeManifestsResponse) String() string {
 func (*ListNodeManifestsResponse) ProtoMessage() {}
 
 func (x *ListNodeManifestsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_mcpstudio_v1_orchestrator_proto_msgTypes[3]
+	mi := &file_mcpstudio_v1_orchestrator_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -198,7 +445,7 @@ func (x *ListNodeManifestsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListNodeManifestsResponse.ProtoReflect.Descriptor instead.
 func (*ListNodeManifestsResponse) Descriptor() ([]byte, []int) {
-	return file_mcpstudio_v1_orchestrator_proto_rawDescGZIP(), []int{3}
+	return file_mcpstudio_v1_orchestrator_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *ListNodeManifestsResponse) GetManifests() []*NodeManifest {
@@ -217,7 +464,7 @@ type SavePipelineRequest struct {
 
 func (x *SavePipelineRequest) Reset() {
 	*x = SavePipelineRequest{}
-	mi := &file_mcpstudio_v1_orchestrator_proto_msgTypes[4]
+	mi := &file_mcpstudio_v1_orchestrator_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -229,7 +476,7 @@ func (x *SavePipelineRequest) String() string {
 func (*SavePipelineRequest) ProtoMessage() {}
 
 func (x *SavePipelineRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_mcpstudio_v1_orchestrator_proto_msgTypes[4]
+	mi := &file_mcpstudio_v1_orchestrator_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -242,7 +489,7 @@ func (x *SavePipelineRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SavePipelineRequest.ProtoReflect.Descriptor instead.
 func (*SavePipelineRequest) Descriptor() ([]byte, []int) {
-	return file_mcpstudio_v1_orchestrator_proto_rawDescGZIP(), []int{4}
+	return file_mcpstudio_v1_orchestrator_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *SavePipelineRequest) GetPipeline() *Pipeline {
@@ -261,7 +508,7 @@ type SavePipelineResponse struct {
 
 func (x *SavePipelineResponse) Reset() {
 	*x = SavePipelineResponse{}
-	mi := &file_mcpstudio_v1_orchestrator_proto_msgTypes[5]
+	mi := &file_mcpstudio_v1_orchestrator_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -273,7 +520,7 @@ func (x *SavePipelineResponse) String() string {
 func (*SavePipelineResponse) ProtoMessage() {}
 
 func (x *SavePipelineResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_mcpstudio_v1_orchestrator_proto_msgTypes[5]
+	mi := &file_mcpstudio_v1_orchestrator_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -286,7 +533,7 @@ func (x *SavePipelineResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SavePipelineResponse.ProtoReflect.Descriptor instead.
 func (*SavePipelineResponse) Descriptor() ([]byte, []int) {
-	return file_mcpstudio_v1_orchestrator_proto_rawDescGZIP(), []int{5}
+	return file_mcpstudio_v1_orchestrator_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *SavePipelineResponse) GetId() string {
@@ -305,7 +552,7 @@ type GetPipelineRequest struct {
 
 func (x *GetPipelineRequest) Reset() {
 	*x = GetPipelineRequest{}
-	mi := &file_mcpstudio_v1_orchestrator_proto_msgTypes[6]
+	mi := &file_mcpstudio_v1_orchestrator_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -317,7 +564,7 @@ func (x *GetPipelineRequest) String() string {
 func (*GetPipelineRequest) ProtoMessage() {}
 
 func (x *GetPipelineRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_mcpstudio_v1_orchestrator_proto_msgTypes[6]
+	mi := &file_mcpstudio_v1_orchestrator_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -330,7 +577,7 @@ func (x *GetPipelineRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetPipelineRequest.ProtoReflect.Descriptor instead.
 func (*GetPipelineRequest) Descriptor() ([]byte, []int) {
-	return file_mcpstudio_v1_orchestrator_proto_rawDescGZIP(), []int{6}
+	return file_mcpstudio_v1_orchestrator_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *GetPipelineRequest) GetId() string {
@@ -349,7 +596,7 @@ type GetPipelineResponse struct {
 
 func (x *GetPipelineResponse) Reset() {
 	*x = GetPipelineResponse{}
-	mi := &file_mcpstudio_v1_orchestrator_proto_msgTypes[7]
+	mi := &file_mcpstudio_v1_orchestrator_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -361,7 +608,7 @@ func (x *GetPipelineResponse) String() string {
 func (*GetPipelineResponse) ProtoMessage() {}
 
 func (x *GetPipelineResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_mcpstudio_v1_orchestrator_proto_msgTypes[7]
+	mi := &file_mcpstudio_v1_orchestrator_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -374,7 +621,7 @@ func (x *GetPipelineResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetPipelineResponse.ProtoReflect.Descriptor instead.
 func (*GetPipelineResponse) Descriptor() ([]byte, []int) {
-	return file_mcpstudio_v1_orchestrator_proto_rawDescGZIP(), []int{7}
+	return file_mcpstudio_v1_orchestrator_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *GetPipelineResponse) GetPipeline() *Pipeline {
@@ -393,7 +640,7 @@ type StartRunRequest struct {
 
 func (x *StartRunRequest) Reset() {
 	*x = StartRunRequest{}
-	mi := &file_mcpstudio_v1_orchestrator_proto_msgTypes[8]
+	mi := &file_mcpstudio_v1_orchestrator_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -405,7 +652,7 @@ func (x *StartRunRequest) String() string {
 func (*StartRunRequest) ProtoMessage() {}
 
 func (x *StartRunRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_mcpstudio_v1_orchestrator_proto_msgTypes[8]
+	mi := &file_mcpstudio_v1_orchestrator_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -418,7 +665,7 @@ func (x *StartRunRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StartRunRequest.ProtoReflect.Descriptor instead.
 func (*StartRunRequest) Descriptor() ([]byte, []int) {
-	return file_mcpstudio_v1_orchestrator_proto_rawDescGZIP(), []int{8}
+	return file_mcpstudio_v1_orchestrator_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *StartRunRequest) GetPipelineId() string {
@@ -437,7 +684,7 @@ type StartRunResponse struct {
 
 func (x *StartRunResponse) Reset() {
 	*x = StartRunResponse{}
-	mi := &file_mcpstudio_v1_orchestrator_proto_msgTypes[9]
+	mi := &file_mcpstudio_v1_orchestrator_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -449,7 +696,7 @@ func (x *StartRunResponse) String() string {
 func (*StartRunResponse) ProtoMessage() {}
 
 func (x *StartRunResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_mcpstudio_v1_orchestrator_proto_msgTypes[9]
+	mi := &file_mcpstudio_v1_orchestrator_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -462,7 +709,7 @@ func (x *StartRunResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StartRunResponse.ProtoReflect.Descriptor instead.
 func (*StartRunResponse) Descriptor() ([]byte, []int) {
-	return file_mcpstudio_v1_orchestrator_proto_rawDescGZIP(), []int{9}
+	return file_mcpstudio_v1_orchestrator_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *StartRunResponse) GetRunId() string {
@@ -481,7 +728,7 @@ type WatchRunRequest struct {
 
 func (x *WatchRunRequest) Reset() {
 	*x = WatchRunRequest{}
-	mi := &file_mcpstudio_v1_orchestrator_proto_msgTypes[10]
+	mi := &file_mcpstudio_v1_orchestrator_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -493,7 +740,7 @@ func (x *WatchRunRequest) String() string {
 func (*WatchRunRequest) ProtoMessage() {}
 
 func (x *WatchRunRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_mcpstudio_v1_orchestrator_proto_msgTypes[10]
+	mi := &file_mcpstudio_v1_orchestrator_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -506,7 +753,7 @@ func (x *WatchRunRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WatchRunRequest.ProtoReflect.Descriptor instead.
 func (*WatchRunRequest) Descriptor() ([]byte, []int) {
-	return file_mcpstudio_v1_orchestrator_proto_rawDescGZIP(), []int{10}
+	return file_mcpstudio_v1_orchestrator_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *WatchRunRequest) GetRunId() string {
@@ -524,10 +771,27 @@ const file_mcpstudio_v1_orchestrator_proto_rawDesc = "" +
 	"\bPipeline\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1d\n" +
 	"\n" +
-	"graph_json\x18\x02 \x01(\tR\tgraphJson\";\n" +
+	"graph_json\x18\x02 \x01(\tR\tgraphJson\"S\n" +
 	"\bRunEvent\x12\x17\n" +
 	"\anode_id\x18\x01 \x01(\tR\x06nodeId\x12\x16\n" +
-	"\x06status\x18\x02 \x01(\tR\x06status\"\x1a\n" +
+	"\x06status\x18\x02 \x01(\tR\x06status\x12\x16\n" +
+	"\x06detail\x18\x03 \x01(\tR\x06detail\"W\n" +
+	"\x10SetSecretRequest\x12\x17\n" +
+	"\anode_id\x18\x01 \x01(\tR\x06nodeId\x12\x14\n" +
+	"\x05field\x18\x02 \x01(\tR\x05field\x12\x14\n" +
+	"\x05value\x18\x03 \x01(\tR\x05value\"3\n" +
+	"\x11SetSecretResponse\x12\x1e\n" +
+	"\n" +
+	"configured\x18\x01 \x01(\bR\n" +
+	"configured\"\x19\n" +
+	"\x17ListSecretStatusRequest\"=\n" +
+	"\fSecretStatus\x12\x17\n" +
+	"\anode_id\x18\x01 \x01(\tR\x06nodeId\x12\x14\n" +
+	"\x05field\x18\x02 \x01(\tR\x05field\"V\n" +
+	"\x18ListSecretStatusResponse\x12:\n" +
+	"\n" +
+	"configured\x18\x01 \x03(\v2\x1a.mcpstudio.v1.SecretStatusR\n" +
+	"configured\"\x1a\n" +
 	"\x18ListNodeManifestsRequest\"U\n" +
 	"\x19ListNodeManifestsResponse\x128\n" +
 	"\tmanifests\x18\x01 \x03(\v2\x1a.mcpstudio.v1.NodeManifestR\tmanifests\"I\n" +
@@ -545,13 +809,15 @@ const file_mcpstudio_v1_orchestrator_proto_rawDesc = "" +
 	"\x10StartRunResponse\x12\x15\n" +
 	"\x06run_id\x18\x01 \x01(\tR\x05runId\"(\n" +
 	"\x0fWatchRunRequest\x12\x15\n" +
-	"\x06run_id\x18\x01 \x01(\tR\x05runId2\xaf\x03\n" +
+	"\x06run_id\x18\x01 \x01(\tR\x05runId2\xe0\x04\n" +
 	"\fOrchestrator\x12d\n" +
 	"\x11ListNodeManifests\x12&.mcpstudio.v1.ListNodeManifestsRequest\x1a'.mcpstudio.v1.ListNodeManifestsResponse\x12U\n" +
 	"\fSavePipeline\x12!.mcpstudio.v1.SavePipelineRequest\x1a\".mcpstudio.v1.SavePipelineResponse\x12R\n" +
 	"\vGetPipeline\x12 .mcpstudio.v1.GetPipelineRequest\x1a!.mcpstudio.v1.GetPipelineResponse\x12I\n" +
 	"\bStartRun\x12\x1d.mcpstudio.v1.StartRunRequest\x1a\x1e.mcpstudio.v1.StartRunResponse\x12C\n" +
-	"\bWatchRun\x12\x1d.mcpstudio.v1.WatchRunRequest\x1a\x16.mcpstudio.v1.RunEvent0\x01B\xb7\x01\n" +
+	"\bWatchRun\x12\x1d.mcpstudio.v1.WatchRunRequest\x1a\x16.mcpstudio.v1.RunEvent0\x01\x12L\n" +
+	"\tSetSecret\x12\x1e.mcpstudio.v1.SetSecretRequest\x1a\x1f.mcpstudio.v1.SetSecretResponse\x12a\n" +
+	"\x10ListSecretStatus\x12%.mcpstudio.v1.ListSecretStatusRequest\x1a&.mcpstudio.v1.ListSecretStatusResponseB\xb7\x01\n" +
 	"\x10com.mcpstudio.v1B\x11OrchestratorProtoP\x01Z?github.com/mcpstudio/mcp_studio/gen/go/mcpstudio/v1;mcpstudiov1\xa2\x02\x03MXX\xaa\x02\fMcpstudio.V1\xca\x02\fMcpstudio\\V1\xe2\x02\x18Mcpstudio\\V1\\GPBMetadata\xea\x02\rMcpstudio::V1b\x06proto3"
 
 var (
@@ -566,40 +832,50 @@ func file_mcpstudio_v1_orchestrator_proto_rawDescGZIP() []byte {
 	return file_mcpstudio_v1_orchestrator_proto_rawDescData
 }
 
-var file_mcpstudio_v1_orchestrator_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
+var file_mcpstudio_v1_orchestrator_proto_msgTypes = make([]protoimpl.MessageInfo, 16)
 var file_mcpstudio_v1_orchestrator_proto_goTypes = []any{
 	(*Pipeline)(nil),                  // 0: mcpstudio.v1.Pipeline
 	(*RunEvent)(nil),                  // 1: mcpstudio.v1.RunEvent
-	(*ListNodeManifestsRequest)(nil),  // 2: mcpstudio.v1.ListNodeManifestsRequest
-	(*ListNodeManifestsResponse)(nil), // 3: mcpstudio.v1.ListNodeManifestsResponse
-	(*SavePipelineRequest)(nil),       // 4: mcpstudio.v1.SavePipelineRequest
-	(*SavePipelineResponse)(nil),      // 5: mcpstudio.v1.SavePipelineResponse
-	(*GetPipelineRequest)(nil),        // 6: mcpstudio.v1.GetPipelineRequest
-	(*GetPipelineResponse)(nil),       // 7: mcpstudio.v1.GetPipelineResponse
-	(*StartRunRequest)(nil),           // 8: mcpstudio.v1.StartRunRequest
-	(*StartRunResponse)(nil),          // 9: mcpstudio.v1.StartRunResponse
-	(*WatchRunRequest)(nil),           // 10: mcpstudio.v1.WatchRunRequest
-	(*NodeManifest)(nil),              // 11: mcpstudio.v1.NodeManifest
+	(*SetSecretRequest)(nil),          // 2: mcpstudio.v1.SetSecretRequest
+	(*SetSecretResponse)(nil),         // 3: mcpstudio.v1.SetSecretResponse
+	(*ListSecretStatusRequest)(nil),   // 4: mcpstudio.v1.ListSecretStatusRequest
+	(*SecretStatus)(nil),              // 5: mcpstudio.v1.SecretStatus
+	(*ListSecretStatusResponse)(nil),  // 6: mcpstudio.v1.ListSecretStatusResponse
+	(*ListNodeManifestsRequest)(nil),  // 7: mcpstudio.v1.ListNodeManifestsRequest
+	(*ListNodeManifestsResponse)(nil), // 8: mcpstudio.v1.ListNodeManifestsResponse
+	(*SavePipelineRequest)(nil),       // 9: mcpstudio.v1.SavePipelineRequest
+	(*SavePipelineResponse)(nil),      // 10: mcpstudio.v1.SavePipelineResponse
+	(*GetPipelineRequest)(nil),        // 11: mcpstudio.v1.GetPipelineRequest
+	(*GetPipelineResponse)(nil),       // 12: mcpstudio.v1.GetPipelineResponse
+	(*StartRunRequest)(nil),           // 13: mcpstudio.v1.StartRunRequest
+	(*StartRunResponse)(nil),          // 14: mcpstudio.v1.StartRunResponse
+	(*WatchRunRequest)(nil),           // 15: mcpstudio.v1.WatchRunRequest
+	(*NodeManifest)(nil),              // 16: mcpstudio.v1.NodeManifest
 }
 var file_mcpstudio_v1_orchestrator_proto_depIdxs = []int32{
-	11, // 0: mcpstudio.v1.ListNodeManifestsResponse.manifests:type_name -> mcpstudio.v1.NodeManifest
-	0,  // 1: mcpstudio.v1.SavePipelineRequest.pipeline:type_name -> mcpstudio.v1.Pipeline
-	0,  // 2: mcpstudio.v1.GetPipelineResponse.pipeline:type_name -> mcpstudio.v1.Pipeline
-	2,  // 3: mcpstudio.v1.Orchestrator.ListNodeManifests:input_type -> mcpstudio.v1.ListNodeManifestsRequest
-	4,  // 4: mcpstudio.v1.Orchestrator.SavePipeline:input_type -> mcpstudio.v1.SavePipelineRequest
-	6,  // 5: mcpstudio.v1.Orchestrator.GetPipeline:input_type -> mcpstudio.v1.GetPipelineRequest
-	8,  // 6: mcpstudio.v1.Orchestrator.StartRun:input_type -> mcpstudio.v1.StartRunRequest
-	10, // 7: mcpstudio.v1.Orchestrator.WatchRun:input_type -> mcpstudio.v1.WatchRunRequest
-	3,  // 8: mcpstudio.v1.Orchestrator.ListNodeManifests:output_type -> mcpstudio.v1.ListNodeManifestsResponse
-	5,  // 9: mcpstudio.v1.Orchestrator.SavePipeline:output_type -> mcpstudio.v1.SavePipelineResponse
-	7,  // 10: mcpstudio.v1.Orchestrator.GetPipeline:output_type -> mcpstudio.v1.GetPipelineResponse
-	9,  // 11: mcpstudio.v1.Orchestrator.StartRun:output_type -> mcpstudio.v1.StartRunResponse
-	1,  // 12: mcpstudio.v1.Orchestrator.WatchRun:output_type -> mcpstudio.v1.RunEvent
-	8,  // [8:13] is the sub-list for method output_type
-	3,  // [3:8] is the sub-list for method input_type
-	3,  // [3:3] is the sub-list for extension type_name
-	3,  // [3:3] is the sub-list for extension extendee
-	0,  // [0:3] is the sub-list for field type_name
+	5,  // 0: mcpstudio.v1.ListSecretStatusResponse.configured:type_name -> mcpstudio.v1.SecretStatus
+	16, // 1: mcpstudio.v1.ListNodeManifestsResponse.manifests:type_name -> mcpstudio.v1.NodeManifest
+	0,  // 2: mcpstudio.v1.SavePipelineRequest.pipeline:type_name -> mcpstudio.v1.Pipeline
+	0,  // 3: mcpstudio.v1.GetPipelineResponse.pipeline:type_name -> mcpstudio.v1.Pipeline
+	7,  // 4: mcpstudio.v1.Orchestrator.ListNodeManifests:input_type -> mcpstudio.v1.ListNodeManifestsRequest
+	9,  // 5: mcpstudio.v1.Orchestrator.SavePipeline:input_type -> mcpstudio.v1.SavePipelineRequest
+	11, // 6: mcpstudio.v1.Orchestrator.GetPipeline:input_type -> mcpstudio.v1.GetPipelineRequest
+	13, // 7: mcpstudio.v1.Orchestrator.StartRun:input_type -> mcpstudio.v1.StartRunRequest
+	15, // 8: mcpstudio.v1.Orchestrator.WatchRun:input_type -> mcpstudio.v1.WatchRunRequest
+	2,  // 9: mcpstudio.v1.Orchestrator.SetSecret:input_type -> mcpstudio.v1.SetSecretRequest
+	4,  // 10: mcpstudio.v1.Orchestrator.ListSecretStatus:input_type -> mcpstudio.v1.ListSecretStatusRequest
+	8,  // 11: mcpstudio.v1.Orchestrator.ListNodeManifests:output_type -> mcpstudio.v1.ListNodeManifestsResponse
+	10, // 12: mcpstudio.v1.Orchestrator.SavePipeline:output_type -> mcpstudio.v1.SavePipelineResponse
+	12, // 13: mcpstudio.v1.Orchestrator.GetPipeline:output_type -> mcpstudio.v1.GetPipelineResponse
+	14, // 14: mcpstudio.v1.Orchestrator.StartRun:output_type -> mcpstudio.v1.StartRunResponse
+	1,  // 15: mcpstudio.v1.Orchestrator.WatchRun:output_type -> mcpstudio.v1.RunEvent
+	3,  // 16: mcpstudio.v1.Orchestrator.SetSecret:output_type -> mcpstudio.v1.SetSecretResponse
+	6,  // 17: mcpstudio.v1.Orchestrator.ListSecretStatus:output_type -> mcpstudio.v1.ListSecretStatusResponse
+	11, // [11:18] is the sub-list for method output_type
+	4,  // [4:11] is the sub-list for method input_type
+	4,  // [4:4] is the sub-list for extension type_name
+	4,  // [4:4] is the sub-list for extension extendee
+	0,  // [0:4] is the sub-list for field type_name
 }
 
 func init() { file_mcpstudio_v1_orchestrator_proto_init() }
@@ -614,7 +890,7 @@ func file_mcpstudio_v1_orchestrator_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_mcpstudio_v1_orchestrator_proto_rawDesc), len(file_mcpstudio_v1_orchestrator_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   11,
+			NumMessages:   16,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

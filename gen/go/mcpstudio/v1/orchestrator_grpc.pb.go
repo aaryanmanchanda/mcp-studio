@@ -24,6 +24,8 @@ const (
 	Orchestrator_GetPipeline_FullMethodName       = "/mcpstudio.v1.Orchestrator/GetPipeline"
 	Orchestrator_StartRun_FullMethodName          = "/mcpstudio.v1.Orchestrator/StartRun"
 	Orchestrator_WatchRun_FullMethodName          = "/mcpstudio.v1.Orchestrator/WatchRun"
+	Orchestrator_SetSecret_FullMethodName         = "/mcpstudio.v1.Orchestrator/SetSecret"
+	Orchestrator_ListSecretStatus_FullMethodName  = "/mcpstudio.v1.Orchestrator/ListSecretStatus"
 )
 
 // OrchestratorClient is the client API for Orchestrator service.
@@ -38,6 +40,8 @@ type OrchestratorClient interface {
 	GetPipeline(ctx context.Context, in *GetPipelineRequest, opts ...grpc.CallOption) (*GetPipelineResponse, error)
 	StartRun(ctx context.Context, in *StartRunRequest, opts ...grpc.CallOption) (*StartRunResponse, error)
 	WatchRun(ctx context.Context, in *WatchRunRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[RunEvent], error)
+	SetSecret(ctx context.Context, in *SetSecretRequest, opts ...grpc.CallOption) (*SetSecretResponse, error)
+	ListSecretStatus(ctx context.Context, in *ListSecretStatusRequest, opts ...grpc.CallOption) (*ListSecretStatusResponse, error)
 }
 
 type orchestratorClient struct {
@@ -107,6 +111,26 @@ func (c *orchestratorClient) WatchRun(ctx context.Context, in *WatchRunRequest, 
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
 type Orchestrator_WatchRunClient = grpc.ServerStreamingClient[RunEvent]
 
+func (c *orchestratorClient) SetSecret(ctx context.Context, in *SetSecretRequest, opts ...grpc.CallOption) (*SetSecretResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SetSecretResponse)
+	err := c.cc.Invoke(ctx, Orchestrator_SetSecret_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *orchestratorClient) ListSecretStatus(ctx context.Context, in *ListSecretStatusRequest, opts ...grpc.CallOption) (*ListSecretStatusResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListSecretStatusResponse)
+	err := c.cc.Invoke(ctx, Orchestrator_ListSecretStatus_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // OrchestratorServer is the server API for Orchestrator service.
 // All implementations must embed UnimplementedOrchestratorServer
 // for forward compatibility.
@@ -119,6 +143,8 @@ type OrchestratorServer interface {
 	GetPipeline(context.Context, *GetPipelineRequest) (*GetPipelineResponse, error)
 	StartRun(context.Context, *StartRunRequest) (*StartRunResponse, error)
 	WatchRun(*WatchRunRequest, grpc.ServerStreamingServer[RunEvent]) error
+	SetSecret(context.Context, *SetSecretRequest) (*SetSecretResponse, error)
+	ListSecretStatus(context.Context, *ListSecretStatusRequest) (*ListSecretStatusResponse, error)
 	mustEmbedUnimplementedOrchestratorServer()
 }
 
@@ -143,6 +169,12 @@ func (UnimplementedOrchestratorServer) StartRun(context.Context, *StartRunReques
 }
 func (UnimplementedOrchestratorServer) WatchRun(*WatchRunRequest, grpc.ServerStreamingServer[RunEvent]) error {
 	return status.Error(codes.Unimplemented, "method WatchRun not implemented")
+}
+func (UnimplementedOrchestratorServer) SetSecret(context.Context, *SetSecretRequest) (*SetSecretResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method SetSecret not implemented")
+}
+func (UnimplementedOrchestratorServer) ListSecretStatus(context.Context, *ListSecretStatusRequest) (*ListSecretStatusResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListSecretStatus not implemented")
 }
 func (UnimplementedOrchestratorServer) mustEmbedUnimplementedOrchestratorServer() {}
 func (UnimplementedOrchestratorServer) testEmbeddedByValue()                      {}
@@ -248,6 +280,42 @@ func _Orchestrator_WatchRun_Handler(srv interface{}, stream grpc.ServerStream) e
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
 type Orchestrator_WatchRunServer = grpc.ServerStreamingServer[RunEvent]
 
+func _Orchestrator_SetSecret_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SetSecretRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OrchestratorServer).SetSecret(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Orchestrator_SetSecret_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OrchestratorServer).SetSecret(ctx, req.(*SetSecretRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Orchestrator_ListSecretStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListSecretStatusRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OrchestratorServer).ListSecretStatus(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Orchestrator_ListSecretStatus_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OrchestratorServer).ListSecretStatus(ctx, req.(*ListSecretStatusRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Orchestrator_ServiceDesc is the grpc.ServiceDesc for Orchestrator service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -270,6 +338,14 @@ var Orchestrator_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "StartRun",
 			Handler:    _Orchestrator_StartRun_Handler,
+		},
+		{
+			MethodName: "SetSecret",
+			Handler:    _Orchestrator_SetSecret_Handler,
+		},
+		{
+			MethodName: "ListSecretStatus",
+			Handler:    _Orchestrator_ListSecretStatus_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{

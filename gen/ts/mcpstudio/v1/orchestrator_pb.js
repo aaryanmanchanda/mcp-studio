@@ -9,7 +9,7 @@ import { file_mcpstudio_v1_manifest } from "./manifest_pb";
  * Describes the file mcpstudio/v1/orchestrator.proto.
  */
 export const file_mcpstudio_v1_orchestrator = /*@__PURE__*/
-  fileDesc("Ch9tY3BzdHVkaW8vdjEvb3JjaGVzdHJhdG9yLnByb3RvEgxtY3BzdHVkaW8udjEiKgoIUGlwZWxpbmUSCgoCaWQYASABKAkSEgoKZ3JhcGhfanNvbhgCIAEoCSIrCghSdW5FdmVudBIPCgdub2RlX2lkGAEgASgJEg4KBnN0YXR1cxgCIAEoCSIaChhMaXN0Tm9kZU1hbmlmZXN0c1JlcXVlc3QiSgoZTGlzdE5vZGVNYW5pZmVzdHNSZXNwb25zZRItCgltYW5pZmVzdHMYASADKAsyGi5tY3BzdHVkaW8udjEuTm9kZU1hbmlmZXN0Ij8KE1NhdmVQaXBlbGluZVJlcXVlc3QSKAoIcGlwZWxpbmUYASABKAsyFi5tY3BzdHVkaW8udjEuUGlwZWxpbmUiIgoUU2F2ZVBpcGVsaW5lUmVzcG9uc2USCgoCaWQYASABKAkiIAoSR2V0UGlwZWxpbmVSZXF1ZXN0EgoKAmlkGAEgASgJIj8KE0dldFBpcGVsaW5lUmVzcG9uc2USKAoIcGlwZWxpbmUYASABKAsyFi5tY3BzdHVkaW8udjEuUGlwZWxpbmUiJgoPU3RhcnRSdW5SZXF1ZXN0EhMKC3BpcGVsaW5lX2lkGAEgASgJIiIKEFN0YXJ0UnVuUmVzcG9uc2USDgoGcnVuX2lkGAEgASgJIiEKD1dhdGNoUnVuUmVxdWVzdBIOCgZydW5faWQYASABKAkyrwMKDE9yY2hlc3RyYXRvchJkChFMaXN0Tm9kZU1hbmlmZXN0cxImLm1jcHN0dWRpby52MS5MaXN0Tm9kZU1hbmlmZXN0c1JlcXVlc3QaJy5tY3BzdHVkaW8udjEuTGlzdE5vZGVNYW5pZmVzdHNSZXNwb25zZRJVCgxTYXZlUGlwZWxpbmUSIS5tY3BzdHVkaW8udjEuU2F2ZVBpcGVsaW5lUmVxdWVzdBoiLm1jcHN0dWRpby52MS5TYXZlUGlwZWxpbmVSZXNwb25zZRJSCgtHZXRQaXBlbGluZRIgLm1jcHN0dWRpby52MS5HZXRQaXBlbGluZVJlcXVlc3QaIS5tY3BzdHVkaW8udjEuR2V0UGlwZWxpbmVSZXNwb25zZRJJCghTdGFydFJ1bhIdLm1jcHN0dWRpby52MS5TdGFydFJ1blJlcXVlc3QaHi5tY3BzdHVkaW8udjEuU3RhcnRSdW5SZXNwb25zZRJDCghXYXRjaFJ1bhIdLm1jcHN0dWRpby52MS5XYXRjaFJ1blJlcXVlc3QaFi5tY3BzdHVkaW8udjEuUnVuRXZlbnQwAUK3AQoQY29tLm1jcHN0dWRpby52MUIRT3JjaGVzdHJhdG9yUHJvdG9QAVo/Z2l0aHViLmNvbS9tY3BzdHVkaW8vbWNwX3N0dWRpby9nZW4vZ28vbWNwc3R1ZGlvL3YxO21jcHN0dWRpb3YxogIDTVhYqgIMTWNwc3R1ZGlvLlYxygIMTWNwc3R1ZGlvXFYx4gIYTWNwc3R1ZGlvXFYxXEdQQk1ldGFkYXRh6gINTWNwc3R1ZGlvOjpWMWIGcHJvdG8z", [file_mcpstudio_v1_manifest]);
+  fileDesc("Ch9tY3BzdHVkaW8vdjEvb3JjaGVzdHJhdG9yLnByb3RvEgxtY3BzdHVkaW8udjEiKgoIUGlwZWxpbmUSCgoCaWQYASABKAkSEgoKZ3JhcGhfanNvbhgCIAEoCSI7CghSdW5FdmVudBIPCgdub2RlX2lkGAEgASgJEg4KBnN0YXR1cxgCIAEoCRIOCgZkZXRhaWwYAyABKAkiQQoQU2V0U2VjcmV0UmVxdWVzdBIPCgdub2RlX2lkGAEgASgJEg0KBWZpZWxkGAIgASgJEg0KBXZhbHVlGAMgASgJIicKEVNldFNlY3JldFJlc3BvbnNlEhIKCmNvbmZpZ3VyZWQYASABKAgiGQoXTGlzdFNlY3JldFN0YXR1c1JlcXVlc3QiLgoMU2VjcmV0U3RhdHVzEg8KB25vZGVfaWQYASABKAkSDQoFZmllbGQYAiABKAkiSgoYTGlzdFNlY3JldFN0YXR1c1Jlc3BvbnNlEi4KCmNvbmZpZ3VyZWQYASADKAsyGi5tY3BzdHVkaW8udjEuU2VjcmV0U3RhdHVzIhoKGExpc3ROb2RlTWFuaWZlc3RzUmVxdWVzdCJKChlMaXN0Tm9kZU1hbmlmZXN0c1Jlc3BvbnNlEi0KCW1hbmlmZXN0cxgBIAMoCzIaLm1jcHN0dWRpby52MS5Ob2RlTWFuaWZlc3QiPwoTU2F2ZVBpcGVsaW5lUmVxdWVzdBIoCghwaXBlbGluZRgBIAEoCzIWLm1jcHN0dWRpby52MS5QaXBlbGluZSIiChRTYXZlUGlwZWxpbmVSZXNwb25zZRIKCgJpZBgBIAEoCSIgChJHZXRQaXBlbGluZVJlcXVlc3QSCgoCaWQYASABKAkiPwoTR2V0UGlwZWxpbmVSZXNwb25zZRIoCghwaXBlbGluZRgBIAEoCzIWLm1jcHN0dWRpby52MS5QaXBlbGluZSImCg9TdGFydFJ1blJlcXVlc3QSEwoLcGlwZWxpbmVfaWQYASABKAkiIgoQU3RhcnRSdW5SZXNwb25zZRIOCgZydW5faWQYASABKAkiIQoPV2F0Y2hSdW5SZXF1ZXN0Eg4KBnJ1bl9pZBgBIAEoCTLgBAoMT3JjaGVzdHJhdG9yEmQKEUxpc3ROb2RlTWFuaWZlc3RzEiYubWNwc3R1ZGlvLnYxLkxpc3ROb2RlTWFuaWZlc3RzUmVxdWVzdBonLm1jcHN0dWRpby52MS5MaXN0Tm9kZU1hbmlmZXN0c1Jlc3BvbnNlElUKDFNhdmVQaXBlbGluZRIhLm1jcHN0dWRpby52MS5TYXZlUGlwZWxpbmVSZXF1ZXN0GiIubWNwc3R1ZGlvLnYxLlNhdmVQaXBlbGluZVJlc3BvbnNlElIKC0dldFBpcGVsaW5lEiAubWNwc3R1ZGlvLnYxLkdldFBpcGVsaW5lUmVxdWVzdBohLm1jcHN0dWRpby52MS5HZXRQaXBlbGluZVJlc3BvbnNlEkkKCFN0YXJ0UnVuEh0ubWNwc3R1ZGlvLnYxLlN0YXJ0UnVuUmVxdWVzdBoeLm1jcHN0dWRpby52MS5TdGFydFJ1blJlc3BvbnNlEkMKCFdhdGNoUnVuEh0ubWNwc3R1ZGlvLnYxLldhdGNoUnVuUmVxdWVzdBoWLm1jcHN0dWRpby52MS5SdW5FdmVudDABEkwKCVNldFNlY3JldBIeLm1jcHN0dWRpby52MS5TZXRTZWNyZXRSZXF1ZXN0Gh8ubWNwc3R1ZGlvLnYxLlNldFNlY3JldFJlc3BvbnNlEmEKEExpc3RTZWNyZXRTdGF0dXMSJS5tY3BzdHVkaW8udjEuTGlzdFNlY3JldFN0YXR1c1JlcXVlc3QaJi5tY3BzdHVkaW8udjEuTGlzdFNlY3JldFN0YXR1c1Jlc3BvbnNlQrcBChBjb20ubWNwc3R1ZGlvLnYxQhFPcmNoZXN0cmF0b3JQcm90b1ABWj9naXRodWIuY29tL21jcHN0dWRpby9tY3Bfc3R1ZGlvL2dlbi9nby9tY3BzdHVkaW8vdjE7bWNwc3R1ZGlvdjGiAgNNWFiqAgxNY3BzdHVkaW8uVjHKAgxNY3BzdHVkaW9cVjHiAhhNY3BzdHVkaW9cVjFcR1BCTWV0YWRhdGHqAg1NY3BzdHVkaW86OlYxYgZwcm90bzM", [file_mcpstudio_v1_manifest]);
 
 /**
  * Describes the message mcpstudio.v1.Pipeline.
@@ -26,67 +26,102 @@ export const RunEventSchema = /*@__PURE__*/
   messageDesc(file_mcpstudio_v1_orchestrator, 1);
 
 /**
+ * Describes the message mcpstudio.v1.SetSecretRequest.
+ * Use `create(SetSecretRequestSchema)` to create a new message.
+ */
+export const SetSecretRequestSchema = /*@__PURE__*/
+  messageDesc(file_mcpstudio_v1_orchestrator, 2);
+
+/**
+ * Describes the message mcpstudio.v1.SetSecretResponse.
+ * Use `create(SetSecretResponseSchema)` to create a new message.
+ */
+export const SetSecretResponseSchema = /*@__PURE__*/
+  messageDesc(file_mcpstudio_v1_orchestrator, 3);
+
+/**
+ * Describes the message mcpstudio.v1.ListSecretStatusRequest.
+ * Use `create(ListSecretStatusRequestSchema)` to create a new message.
+ */
+export const ListSecretStatusRequestSchema = /*@__PURE__*/
+  messageDesc(file_mcpstudio_v1_orchestrator, 4);
+
+/**
+ * Describes the message mcpstudio.v1.SecretStatus.
+ * Use `create(SecretStatusSchema)` to create a new message.
+ */
+export const SecretStatusSchema = /*@__PURE__*/
+  messageDesc(file_mcpstudio_v1_orchestrator, 5);
+
+/**
+ * Describes the message mcpstudio.v1.ListSecretStatusResponse.
+ * Use `create(ListSecretStatusResponseSchema)` to create a new message.
+ */
+export const ListSecretStatusResponseSchema = /*@__PURE__*/
+  messageDesc(file_mcpstudio_v1_orchestrator, 6);
+
+/**
  * Describes the message mcpstudio.v1.ListNodeManifestsRequest.
  * Use `create(ListNodeManifestsRequestSchema)` to create a new message.
  */
 export const ListNodeManifestsRequestSchema = /*@__PURE__*/
-  messageDesc(file_mcpstudio_v1_orchestrator, 2);
+  messageDesc(file_mcpstudio_v1_orchestrator, 7);
 
 /**
  * Describes the message mcpstudio.v1.ListNodeManifestsResponse.
  * Use `create(ListNodeManifestsResponseSchema)` to create a new message.
  */
 export const ListNodeManifestsResponseSchema = /*@__PURE__*/
-  messageDesc(file_mcpstudio_v1_orchestrator, 3);
+  messageDesc(file_mcpstudio_v1_orchestrator, 8);
 
 /**
  * Describes the message mcpstudio.v1.SavePipelineRequest.
  * Use `create(SavePipelineRequestSchema)` to create a new message.
  */
 export const SavePipelineRequestSchema = /*@__PURE__*/
-  messageDesc(file_mcpstudio_v1_orchestrator, 4);
+  messageDesc(file_mcpstudio_v1_orchestrator, 9);
 
 /**
  * Describes the message mcpstudio.v1.SavePipelineResponse.
  * Use `create(SavePipelineResponseSchema)` to create a new message.
  */
 export const SavePipelineResponseSchema = /*@__PURE__*/
-  messageDesc(file_mcpstudio_v1_orchestrator, 5);
+  messageDesc(file_mcpstudio_v1_orchestrator, 10);
 
 /**
  * Describes the message mcpstudio.v1.GetPipelineRequest.
  * Use `create(GetPipelineRequestSchema)` to create a new message.
  */
 export const GetPipelineRequestSchema = /*@__PURE__*/
-  messageDesc(file_mcpstudio_v1_orchestrator, 6);
+  messageDesc(file_mcpstudio_v1_orchestrator, 11);
 
 /**
  * Describes the message mcpstudio.v1.GetPipelineResponse.
  * Use `create(GetPipelineResponseSchema)` to create a new message.
  */
 export const GetPipelineResponseSchema = /*@__PURE__*/
-  messageDesc(file_mcpstudio_v1_orchestrator, 7);
+  messageDesc(file_mcpstudio_v1_orchestrator, 12);
 
 /**
  * Describes the message mcpstudio.v1.StartRunRequest.
  * Use `create(StartRunRequestSchema)` to create a new message.
  */
 export const StartRunRequestSchema = /*@__PURE__*/
-  messageDesc(file_mcpstudio_v1_orchestrator, 8);
+  messageDesc(file_mcpstudio_v1_orchestrator, 13);
 
 /**
  * Describes the message mcpstudio.v1.StartRunResponse.
  * Use `create(StartRunResponseSchema)` to create a new message.
  */
 export const StartRunResponseSchema = /*@__PURE__*/
-  messageDesc(file_mcpstudio_v1_orchestrator, 9);
+  messageDesc(file_mcpstudio_v1_orchestrator, 14);
 
 /**
  * Describes the message mcpstudio.v1.WatchRunRequest.
  * Use `create(WatchRunRequestSchema)` to create a new message.
  */
 export const WatchRunRequestSchema = /*@__PURE__*/
-  messageDesc(file_mcpstudio_v1_orchestrator, 10);
+  messageDesc(file_mcpstudio_v1_orchestrator, 15);
 
 /**
  * The frontend<->orchestrator contract (Connect-RPC): manage pipelines and
