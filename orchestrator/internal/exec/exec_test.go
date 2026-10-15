@@ -15,7 +15,7 @@ import (
 // a linear pipeline in the shape the canvas saves it
 const demoGraph = `{
   "nodes": [
-    {"id":"b","data":{"manifestId":"gemini-notes"},"config":{"model":"gemini-2.5-flash-lite"}},
+    {"id":"b","data":{"manifestId":"gemini-notes"},"config":{"model":"gemini-3.5-flash-lite"}},
     {"id":"a","data":{"manifestId":"groq-transcribe"},"config":{}},
     {"id":"src","data":{"manifestId":"youtube-download"},"config":{"url":"x"}},
     {"id":"conv","data":{"manifestId":"format-converter","hop":{"from":"video/mp4","to":"audio/mpeg"}}}

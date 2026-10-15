@@ -80,7 +80,7 @@ func demoManifests() []*mcpstudiov1.NodeManifest {
 			},
 			ConfigFields: []*mcpstudiov1.ConfigFieldDef{
 				secret("gemini_api_key"),
-				enum("model", "gemini-2.5-flash-lite", "gemini-2.5-flash"),
+				enum("model", "gemini-3.5-flash-lite", "gemini-3.1-flash-lite", "gemini-3.8-flash"),
 				enum("style", "lecture notes", "executive summary", "study questions"),
 			},
 		},

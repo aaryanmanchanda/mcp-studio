@@ -350,7 +350,7 @@ Verified by hand while building: real yt-dlp download of a YouTube clip; real ff
 
 **Not verified, you must try these with real keys before the demo:**
 - the actual Groq, Gemini and Gmail calls (their request shapes follow each vendor's docs but have never hit the real services);
-- Gemini model names (`gemini-2.5-flash-lite`, `gemini-2.5-flash`) may have moved on; they are a dropdown on the node, change them in `demo.go` if a call returns "doesn't know the model";
+- Gemini model names (`gemini-3.5-flash-lite`, `gemini-3.1-flash-lite`, `gemini-3.8-flash`) may have moved on; they are a dropdown on the node, change them in `demo.go` if a call returns "doesn't know the model";
 - the browser UI end to end (the browser automation was unavailable here): dragging, the converter dialog, the secret flow, live badges. The components are unit-tested, the wiring between them is not.
 
 ---

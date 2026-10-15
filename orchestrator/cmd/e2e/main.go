@@ -22,7 +22,7 @@ const graph = `{
     {"id":"n-yt","type":"pipelineNode","position":{"x":0,"y":0},"data":{"manifestId":"youtube-download"},"config":{"url":%q,"max_minutes":"1"}},
     {"id":"n-conv","type":"pipelineNode","position":{"x":300,"y":0},"data":{"manifestId":"format-converter","hop":{"from":"video/mp4","to":"audio/mpeg"}},"config":{}},
     {"id":"n-groq","type":"pipelineNode","position":{"x":600,"y":0},"data":{"manifestId":"groq-transcribe"},"config":{"model":"whisper-large-v3-turbo"}},
-    {"id":"n-gem","type":"pipelineNode","position":{"x":900,"y":0},"data":{"manifestId":"gemini-notes"},"config":{"model":"gemini-2.5-flash-lite","style":"lecture notes"}},
+    {"id":"n-gem","type":"pipelineNode","position":{"x":900,"y":0},"data":{"manifestId":"gemini-notes"},"config":{"model":"gemini-3.5-flash-lite","style":"lecture notes"}},
     {"id":"n-mail","type":"pipelineNode","position":{"x":1200,"y":0},"data":{"manifestId":"email-send"},"config":{"from_address":"me@example.com","to_address":"you@example.com"}}
   ],
   "edges": [
