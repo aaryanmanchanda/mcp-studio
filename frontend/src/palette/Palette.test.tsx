@@ -26,13 +26,12 @@ vi.mock("@/store/graphStore", () => ({
 const manifest = (id: string, category: string) =>
   ({ id, category }) as NodeManifest;
 
-const SIX_FIXTURES = [
-  manifest("youtube-scraper", "Sources"),
-  manifest("relevance-filter", "Processing"),
-  manifest("trim-clip", "Processing"),
-  manifest("caption-generator", "Processing"),
-  manifest("format-converter", "Convert"),
-  manifest("upload-post", "Sinks"),
+// the demo nodes the palette offers, plus the Convert category which is empty once format-converter is hidden
+const DEMO_NODES = [
+  manifest("youtube-download", "Sources"),
+  manifest("groq-transcribe", "Processing"),
+  manifest("gemini-notes", "Processing"),
+  manifest("email-send", "Sinks"),
 ];
 
 function renderPalette() {
@@ -84,21 +83,41 @@ describe("Palette", () => {
     ).toBeNull();
   });
 
-  it("populated state groups the six fixtures into four sections in fixed order", () => {
+  it("populated state groups the demo nodes into sections in fixed order", () => {
     h.state.registryStatus = "ready";
-    h.state.manifestRegistry = SIX_FIXTURES;
+    h.state.manifestRegistry = DEMO_NODES;
     renderPalette();
 
     const headers = screen.getAllByRole("heading").map((el) => el.textContent);
-    expect(headers).toEqual(["Sources", "Processing", "Convert", "Sinks"]);
-    expect(screen.getByText("YouTube Scraper")).toBeInTheDocument();
+    expect(headers).toEqual(["Sources", "Processing", "Sinks"]);
+    expect(screen.getByText("Youtube Download")).toBeInTheDocument();
+  });
+
+  it("hides nodes with no runner behind them, and the converter that is only ever auto-inserted", () => {
+    h.state.registryStatus = "ready";
+    h.state.manifestRegistry = [
+      ...DEMO_NODES,
+      manifest("youtube-scraper", "Sources"),
+      manifest("relevance-filter", "Processing"),
+      manifest("trim-clip", "Processing"),
+      manifest("caption-generator", "Processing"),
+      manifest("upload-post", "Sinks"),
+      manifest("format-converter", "Convert"),
+    ];
+    renderPalette();
+
+    for (const hidden of ["YouTube Scraper", "Relevance Filter", "Trim Clip", "Caption Generator", "Upload/Post", "Format Converter"]) {
+      expect(screen.queryByText(hidden)).toBeNull();
+    }
+    expect(screen.queryByRole("heading", { name: "Convert" })).toBeNull();
+    expect(screen.getByText("Groq Transcribe")).toBeInTheDocument();
   });
 
   it("a category with zero manifests renders no section header", () => {
     h.state.registryStatus = "ready";
     h.state.manifestRegistry = [
-      manifest("youtube-scraper", "Sources"),
-      manifest("upload-post", "Sinks"),
+      manifest("youtube-download", "Sources"),
+      manifest("email-send", "Sinks"),
     ];
     renderPalette();
 
