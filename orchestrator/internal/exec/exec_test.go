@@ -92,8 +92,8 @@ func (f fakeRunner) Run(ctx context.Context, req *mcpstudiov1.ExecuteNodeRequest
 	emit(&mcpstudiov1.NodeEvent{
 		NodeId: req.NodeId, Status: mcpstudiov1.NodeEvent_STATUS_SUCCEEDED, Detail: "ok " + req.NodeId,
 		Outputs: map[string]*mcpstudiov1.NodeIO{
-			"video_out": {Payload: &mcpstudiov1.NodeIO_BlobRef{BlobRef: &mcpstudiov1.BlobRef{Uri: "/x"}}},
-			"media_out": {Payload: &mcpstudiov1.NodeIO_BlobRef{BlobRef: &mcpstudiov1.BlobRef{Uri: "/y"}}},
+			"video_out":  {Payload: &mcpstudiov1.NodeIO_BlobRef{BlobRef: &mcpstudiov1.BlobRef{Uri: "/x"}}},
+			"media_out":  {Payload: &mcpstudiov1.NodeIO_BlobRef{BlobRef: &mcpstudiov1.BlobRef{Uri: "/y"}}},
 			"transcript": {Payload: &mcpstudiov1.NodeIO_JsonValue{JsonValue: st}},
 			"email_out":  {Payload: &mcpstudiov1.NodeIO_JsonValue{JsonValue: st}},
 		},

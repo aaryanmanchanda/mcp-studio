@@ -31,7 +31,8 @@ cleanup() { for p in "${PIDS[@]:-}"; do kill "$p" 2>/dev/null || true; done; }
 trap cleanup EXIT INT TERM
 
 "$PY" runners/python/server.py & PIDS+=($!)
-go run ./orchestrator/cmd/orchestrator & PIDS+=($!)
+go build -o /tmp/mcpstudio-orchestrator ./orchestrator/cmd/orchestrator # a built binary so Ctrl+C really stops it (go run leaves its child running)
+/tmp/mcpstudio-orchestrator & PIDS+=($!)
 pnpm --filter @mcpstudio/frontend dev & PIDS+=($!)
 
 [ "${MCPSTUDIO_DRY_RUN:-}" = "1" ] && echo ">> DRY RUN: groq, gemini and gmail are faked" || true

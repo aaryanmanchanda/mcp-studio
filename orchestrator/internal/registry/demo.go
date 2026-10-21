@@ -85,6 +85,33 @@ func demoManifests() []*mcpstudiov1.NodeManifest {
 			},
 		},
 		{
+			// same input and output sockets as gemini-notes, so it drops into the same place in a pipeline: swap one for the other
+			Id:       "gemini-quiz",
+			Category: "Processing",
+			Inputs: []*mcpstudiov1.SocketDef{
+				{
+					Name:        "transcript_in",
+					ContentType: textJSON,
+					SchemaJson:  `{"type":"object","properties":{"text":{"type":"string"},"language":{"type":"string"},"title":{"type":"string"}}}`,
+				},
+			},
+			Outputs: []*mcpstudiov1.SocketDef{
+				{
+					Name:        "email_out",
+					ContentType: emailJSON,
+					SchemaJson:  `{"type":"object","properties":{"subject":{"type":"string"},"body":{"type":"string"}}}`,
+				},
+			},
+			ConfigFields: []*mcpstudiov1.ConfigFieldDef{
+				secret("gemini_api_key"),
+				enum("model", "gemini-3.5-flash-lite", "gemini-3.1-flash-lite", "gemini-3.8-flash"),
+				num("num_questions"), // 1 to 30, default 8
+				enum("question_type", "multiple choice", "true/false", "short answer"),
+				enum("difficulty", "easy", "medium", "hard"),
+				enum("answer_key", "include", "leave out"),
+			},
+		},
+		{
 			Id:       "email-send",
 			Category: "Sinks",
 			Inputs: []*mcpstudiov1.SocketDef{

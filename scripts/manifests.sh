@@ -52,10 +52,10 @@ MANIFEST_COUNT=$(echo "$RESPONSE" | jq '.manifests | length')
 CATEGORY_COUNT=$(echo "$RESPONSE" | jq '[.manifests[].category] | unique | length')
 
 
-if [ "$MANIFEST_COUNT" -eq 10 ] && [ "$CATEGORY_COUNT" -eq 4 ]; then
+if [ "$MANIFEST_COUNT" -eq 11 ] && [ "$CATEGORY_COUNT" -eq 4 ]; then
   echo "OK: ${MANIFEST_COUNT} manifests across ${CATEGORY_COUNT} categories"
   exit 0
 else
-  echo "FAILED: expected 10 manifests / 4 categories, got ${MANIFEST_COUNT} / ${CATEGORY_COUNT}" >&2
+  echo "FAILED: expected 11 manifests / 4 categories, got ${MANIFEST_COUNT} / ${CATEGORY_COUNT}" >&2
   exit 1
 fi

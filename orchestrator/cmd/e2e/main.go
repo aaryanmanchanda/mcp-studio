@@ -22,7 +22,7 @@ const graph = `{
     {"id":"n-yt","type":"pipelineNode","position":{"x":0,"y":0},"data":{"manifestId":"youtube-download"},"config":{"url":%q,"max_minutes":"1"}},
     {"id":"n-conv","type":"pipelineNode","position":{"x":300,"y":0},"data":{"manifestId":"format-converter","hop":{"from":"video/mp4","to":"audio/mpeg"}},"config":{}},
     {"id":"n-groq","type":"pipelineNode","position":{"x":600,"y":0},"data":{"manifestId":"groq-transcribe"},"config":{"model":"whisper-large-v3-turbo"}},
-    {"id":"n-gem","type":"pipelineNode","position":{"x":900,"y":0},"data":{"manifestId":"gemini-notes"},"config":{"model":"gemini-3.5-flash-lite","style":"lecture notes"}},
+    {"id":"n-gem","type":"pipelineNode","position":{"x":900,"y":0},"data":{"manifestId":%q},"config":{"model":"gemini-3.5-flash-lite","style":"lecture notes","num_questions":"2"}},
     {"id":"n-mail","type":"pipelineNode","position":{"x":1200,"y":0},"data":{"manifestId":"email-send"},"config":{"from_address":"me@example.com","to_address":"you@example.com"}}
   ],
   "edges": [
@@ -37,9 +37,15 @@ const graph = `{
 func main() {
 	base := flag.String("addr", "http://127.0.0.1:8787", "orchestrator address")
 	video := flag.String("video", "", "local video file to use as the source")
+	quiz := flag.Bool("quiz", false, "use the quiz node instead of the notes node")
 	flag.Parse()
 	if *video == "" {
 		log.Fatal("-video is required")
+	}
+
+	middle := "gemini-notes"
+	if *quiz {
+		middle = "gemini-quiz"
 	}
 
 	ctx := context.Background()
@@ -51,7 +57,7 @@ func main() {
 	}
 
 	_, err := c.SavePipeline(ctx, connect.NewRequest(&mcpstudiov1.SavePipelineRequest{
-		Pipeline: &mcpstudiov1.Pipeline{Id: "e2e", GraphJson: fmt.Sprintf(graph, *video)},
+		Pipeline: &mcpstudiov1.Pipeline{Id: "e2e", GraphJson: fmt.Sprintf(graph, *video, middle)},
 	}))
 	check(err, "SavePipeline")
 

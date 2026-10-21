@@ -21,11 +21,16 @@ VIDEO="$MCPSTUDIO_DATA_DIR/input.mp4"
 ffmpeg -y -loglevel error -f lavfi -i testsrc=duration=3:size=320x240:rate=15 -f lavfi -i sine=frequency=440:duration=3 -shortest "$VIDEO"
 
 runners/python/.venv/bin/python runners/python/server.py >/dev/null 2>&1 & PIDS+=($!)
-go run ./orchestrator/cmd/orchestrator -addr "$ADDR" >/dev/null 2>&1 & PIDS+=($!)
+# a built binary, not `go run`: killing `go run` leaves its compiled child alive holding the port
+go build -o "$MCPSTUDIO_DATA_DIR/orchestrator" ./orchestrator/cmd/orchestrator
+"$MCPSTUDIO_DATA_DIR/orchestrator" -addr "$ADDR" >/dev/null 2>&1 & PIDS+=($!)
 
 for _ in $(seq 1 100); do
   (exec 3<>"/dev/tcp/127.0.0.1/8799") 2>/dev/null && break
   sleep 0.2
 done
 sleep 1
+echo "== notes pipeline"
 go run ./orchestrator/cmd/e2e -addr "http://$ADDR" -video "$VIDEO"
+echo "== quiz pipeline"
+go run ./orchestrator/cmd/e2e -addr "http://$ADDR" -video "$VIDEO" -quiz

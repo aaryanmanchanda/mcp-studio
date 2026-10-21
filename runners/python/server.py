@@ -17,7 +17,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from mcpstudio.v1 import runner_pb2, runner_pb2_grpc  # noqa: E402
 
 from common import Ctx, NodeError, scrub  # noqa: E402
-from nodes import converter, email_send, gemini, groq, youtube  # noqa: E402
+from nodes import converter, email_send, gemini, groq, quiz, youtube  # noqa: E402
 
 ADDRESS = "127.0.0.1:50051"
 
@@ -27,6 +27,7 @@ NODES = {
     "format-converter": converter.run,
     "groq-transcribe": groq.run,
     "gemini-notes": gemini.run,
+    "gemini-quiz": quiz.run,
     "email-send": email_send.run,
 }
 
