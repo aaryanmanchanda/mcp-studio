@@ -20,19 +20,6 @@ export const PALETTE_DRAG_TYPE = "application/x-mcpstudio-node-id";
 // the layout must not assume exactly these four are always populated.
 const SECTION_ORDER = CATEGORIES;
 
-// Nodes kept in the registry (the converter search and node rendering need them) but not offered for dragging.
-// the first five are the canvas-only stubs from phase 2 with no runner behind them yet, so dragging one in can only fail at run time.
-// format-converter is inserted by the converter search, never dragged by hand.
-// to bring one back, delete its line here
-const HIDDEN_FROM_PALETTE = new Set([
-  "youtube-scraper",
-  "relevance-filter",
-  "trim-clip",
-  "caption-generator",
-  "upload-post",
-  "format-converter",
-]);
-
 // ---------------------------------------------------------------------------
 
 function PaletteRow({ manifest }: { manifest: NodeManifest }) {
@@ -90,8 +77,7 @@ function PaletteShell({ children }: { children: React.ReactNode }) {
 
 export function Palette() {
   const status = useGraphStore((s) => s.registryStatus);
-  const registry = useGraphStore((s) => s.manifestRegistry);
-  const manifests = registry.filter((m) => !HIDDEN_FROM_PALETTE.has(m.id)); //the store keeps the full list, only the palette trims it
+  const manifests = useGraphStore((s) => s.manifestRegistry);
   const registryError = useGraphStore((s) => s.registryError);
   const fetchRegistry = useGraphStore((s) => s.fetchRegistry);
 
